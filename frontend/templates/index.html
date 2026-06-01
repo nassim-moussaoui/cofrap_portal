@@ -1,0 +1,21 @@
+{% extends "base.html" %} {% block content %}
+<section class="home-screen">
+  <div class="home-brand">
+    <img
+      src="{{ url_for('static', filename='img/cofrap-logo.png') }}"
+      alt="COFRAP"
+      class="home-logo"
+    />
+    <div>
+      <h1>COFRAP</h1>
+      <p>Compagnie Francaise de Realisation d'Applicatifs Professionnels</p>
+    </div>
+  </div>
+
+  <div class="home-card">
+    <h2>Portail employe</h2>
+    <p>Acces interne aux outils et aux applications COFRAP.</p>
+    <a class="btn primary" href="{{ url_for('login') }}">Connexion</a>
+  </div>
+</section>
+{% endblock %}

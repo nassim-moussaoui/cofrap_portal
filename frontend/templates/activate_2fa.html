@@ -1,0 +1,130 @@
+{% extends "base.html" %} {% block content %}
+<section class="split-layout">
+  <div class="panel-card">
+    <p class="eyebrow">Étape 2 · Authentification forte</p>
+    <h1>Activation de l’authentification forte</h1>
+    <p class="lead">
+      Le collaborateur doit scanner le QR Code avec une application
+      Authenticator pour enregistrer le secret TOTP.
+    </p>
+
+    {% if error %}
+    <div class="message error">{{ error }}</div>
+    {% endif %}
+
+    <form method="POST" class="form-grid">
+      <div class="field-group">
+        <label for="username">Nom d’utilisateur</label>
+        <input
+          type="text"
+          id="username"
+          name="username"
+          value="{{ username|default('') }}"
+          placeholder="ex : cduval"
+          required
+        />
+      </div>
+
+      <button class="btn primary btn-wide" type="submit">
+        Générer le QR Code 2FA
+      </button>
+    </form>
+
+    <div class="step-list">
+      <div class="step-item">
+        <span>1</span>
+        <p>Ouvrir l’application Authenticator.</p>
+      </div>
+      <div class="step-item">
+        <span>2</span>
+        <p>Scanner le QR Code généré pour COFRAP.</p>
+      </div>
+      <div class="step-item">
+        <span>3</span>
+        <p>Saisir le code à 6 chiffres lors de la connexion.</p>
+      </div>
+    </div>
+  </div>
+
+  <aside class="panel-card side-panel">
+    <div class="section-heading">
+      <p class="eyebrow">Support d’enrôlement</p>
+      <h2>Mode opératoire</h2>
+    </div>
+
+    <div class="info-list">
+      <div class="info-item">
+        <strong>Compatibilité</strong>
+        <span
+          >Google Authenticator, Microsoft Authenticator et toute application
+          TOTP standard.</span
+        >
+      </div>
+      <div class="info-item">
+        <strong>Secret de secours</strong>
+        <span
+          >Le secret TOTP peut être consulté dans le bloc technique réservé à
+          l’assistance interne si nécessaire.</span
+        >
+      </div>
+      <div class="info-item">
+        <strong>Contrôle d’accès</strong>
+        <span
+          >La MFA complète le mot de passe hashé et limite le risque lié aux
+          identifiants faibles.</span
+        >
+      </div>
+    </div>
+  </aside>
+</section>
+
+{% if success %}
+<section class="section-block">
+  <div class="confirmation-card panel-card">
+    <div class="confirmation-header">
+      <div>
+        <p class="eyebrow">MFA enregistrée</p>
+        <h2>Double authentification activée</h2>
+      </div>
+      <span class="badge badge-success">Sécurité renforcée</span>
+    </div>
+
+    <div class="credential-grid">
+      <div class="credential-card qr-card">
+        <p class="card-label">QR Code de liaison TOTP</p>
+        <img
+          src="{{ url_for('static', filename=qr_image) }}"
+          alt="QR Code 2FA"
+          class="qr-image"
+        />
+        <p class="fine-print">
+          Scannez ce QR Code avec Google Authenticator ou Microsoft
+          Authenticator.
+        </p>
+      </div>
+
+      <div class="credential-card">
+        <p class="card-label">Secret de secours interne</p>
+        <details class="secret-details">
+          <summary>Afficher le secret TOTP</summary>
+          <code class="credential-value">{{ secret }}</code>
+        </details>
+        <p class="fine-print">
+          Ce panneau reste réservé aux besoins d’assistance technique.
+        </p>
+      </div>
+    </div>
+
+    <div class="actions-row">
+      <a class="btn primary" href="{{ url_for('login', username=username) }}"
+        >Tester la connexion sécurisée</a
+      >
+      <a
+        class="btn secondary"
+        href="{{ url_for('dashboard', username=username) }}"
+        >Accéder au dashboard</a
+      >
+    </div>
+  </div>
+</section>
+{% endif %} {% endblock %}

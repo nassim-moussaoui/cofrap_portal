@@ -1,0 +1,504 @@
+* {
+    box-sizing: border-box;
+}
+
+:root {
+    --navy: #0f1f3a;
+    --blue: #1f4f96;
+    --blue-dark: #173a72;
+    --bg: #eef1f4;
+    --surface: #ffffff;
+    --text: #1f2530;
+    --muted: #6b7280;
+    --border: #d7dde6;
+    --shadow: 0 16px 34px rgba(17, 24, 39, 0.10);
+}
+
+html,
+body {
+    margin: 0;
+    min-height: 100%;
+}
+
+body {
+    font-family: Arial, Helvetica, sans-serif;
+    background: #edf1f4;
+    color: var(--text);
+}
+
+a {
+    color: inherit;
+    text-decoration: none;
+}
+
+button,
+input {
+    font: inherit;
+}
+
+.app-shell {
+    width: min(1260px, calc(100% - 28px));
+    margin: 0 auto;
+    padding: 26px 0 34px;
+}
+
+.btn {
+    border: 0;
+    border-radius: 4px;
+    min-height: 38px;
+    padding: 0 16px;
+    font-weight: 700;
+    cursor: pointer;
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+}
+
+.btn.primary {
+    background: linear-gradient(180deg, var(--blue), var(--blue-dark));
+    color: #fff;
+}
+
+.btn.secondary {
+    background: #fff;
+    border: 1px solid var(--border);
+    color: var(--navy);
+}
+
+.home-screen {
+    min-height: calc(100vh - 60px);
+    display: grid;
+    place-items: center;
+    gap: 30px;
+    padding: 24px 0;
+}
+
+.home-brand {
+    display: flex;
+    align-items: center;
+    gap: 14px;
+}
+
+.home-logo,
+.login-logo,
+.dash-logo {
+    width: 72px;
+    height: 72px;
+    object-fit: contain;
+}
+
+.home-brand h1,
+.login-screen h1 {
+    margin: 0;
+    color: var(--navy);
+    font-size: 32px;
+    letter-spacing: 0.01em;
+}
+
+.home-brand p {
+    margin: 3px 0 0;
+    color: var(--muted);
+    font-size: 14px;
+}
+
+.home-card {
+    width: min(420px, 100%);
+    background: var(--surface);
+    border: 1px solid var(--border);
+    border-radius: 8px;
+    box-shadow: var(--shadow);
+    text-align: center;
+    padding: 28px 28px 30px;
+}
+
+.home-card h2 {
+    margin: 0 0 8px;
+    color: var(--navy);
+    font-size: 26px;
+}
+
+.home-card p {
+    margin: 0 0 18px;
+    color: var(--muted);
+}
+
+.login-screen {
+    min-height: calc(100vh - 60px);
+    display: grid;
+    place-items: center;
+    gap: 16px;
+    text-align: center;
+    padding: 20px 0;
+}
+
+.login-card,
+.dash-card,
+.dash-topbar,
+.dash-tabs {
+    background: var(--surface);
+    border: 1px solid var(--border);
+    box-shadow: var(--shadow);
+}
+
+.login-screen h1 {
+    font-size: 28px;
+    font-weight: 500;
+}
+
+.login-card {
+    width: min(420px, 100%);
+    border-radius: 4px;
+    padding: 24px 28px 22px;
+    text-align: left;
+}
+
+.mfa-card {
+    width: min(430px, 100%);
+}
+
+.login-error {
+    margin-bottom: 12px;
+    padding: 10px 12px;
+    background: #fff0f0;
+    border: 1px solid #e4bbbb;
+    color: #b42318;
+    border-radius: 4px;
+    font-size: 13px;
+}
+
+.login-helper {
+    margin: 0 0 18px;
+    text-align: center;
+    color: var(--text);
+    line-height: 1.45;
+    font-size: 14px;
+}
+
+.login-form {
+    display: grid;
+    gap: 8px;
+}
+
+.login-form label {
+    font-size: 14px;
+    color: var(--text);
+    margin-top: 2px;
+}
+
+.login-form input[type="text"],
+.login-form input[type="password"] {
+    width: 100%;
+    height: 38px;
+    border: 1px solid #cfd6df;
+    border-radius: 3px;
+    padding: 0 12px;
+    background: #f8fafc;
+}
+
+.login-form input:focus {
+    outline: none;
+    border-color: #96aecf;
+    background: #fff;
+}
+
+.otp-form {
+    text-align: center;
+}
+
+.otp-form label {
+    display: block;
+    margin-bottom: 8px;
+}
+
+.otp-inputs {
+    display: grid;
+    grid-template-columns: repeat(6, 1fr);
+    gap: 6px;
+    margin-bottom: 14px;
+}
+
+.otp-inputs input {
+    width: 100%;
+    height: 38px;
+    border: 1px solid #cfd6df;
+    border-radius: 3px;
+    text-align: center;
+    font-size: 18px;
+    background: #f8fafc;
+}
+
+.otp-inputs input:focus {
+    outline: none;
+    border-color: #96aecf;
+    background: #fff;
+}
+
+.login-link {
+    margin: 12px 0 0;
+    text-align: center;
+    font-size: 13px;
+    color: #5a6472;
+}
+
+.login-link a {
+    text-decoration: underline;
+    color: #476da7;
+}
+
+.dash-topbar {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    padding: 14px 18px;
+    border-radius: 4px 4px 0 0;
+}
+
+.dash-brand,
+.dash-user {
+    display: flex;
+    align-items: center;
+    gap: 12px;
+}
+
+.dash-brand strong {
+    font-size: 20px;
+    color: var(--navy);
+}
+
+.dash-brand p {
+    margin: 2px 0 0;
+    font-size: 12px;
+    color: #596170;
+}
+
+.dash-user {
+    font-size: 14px;
+    color: #1f2937;
+}
+
+.dash-logout {
+    border: 1px solid #a5afbc;
+    background: #fff;
+    border-radius: 4px;
+    padding: 6px 12px;
+    cursor: pointer;
+}
+
+.dash-tabs {
+    display: flex;
+    gap: 24px;
+    align-items: end;
+    padding: 0 18px;
+    height: 40px;
+    border-top: 0;
+    border-radius: 0;
+    overflow-x: auto;
+}
+
+.dash-tabs a {
+    padding: 10px 0 8px;
+    color: #1f2937;
+    font-size: 14px;
+    white-space: nowrap;
+}
+
+.dash-tabs a.active {
+    border-bottom: 2px solid var(--navy);
+    font-weight: 700;
+}
+
+.dash-grid {
+    display: grid;
+    grid-template-columns: minmax(0, 1fr) 275px;
+    background: #eef1f4;
+    border: 1px solid var(--border);
+    border-top: 0;
+}
+
+.dash-main {
+    display: grid;
+    grid-template-columns: minmax(0, 1.15fr) minmax(0, 0.85fr);
+    gap: 18px;
+    padding: 18px;
+}
+
+.dash-side {
+    background: #f8fafc;
+    border-left: 1px solid var(--border);
+    padding: 18px;
+    display: grid;
+    gap: 18px;
+}
+
+.dash-card {
+    border-radius: 6px;
+    background: #fff;
+    padding: 16px;
+    min-height: 100%;
+}
+
+.card-head h2,
+.notif-card h2 {
+    margin: 0 0 12px;
+    font-size: 16px;
+    color: #1f2937;
+}
+
+.chart-card {
+    min-height: 360px;
+}
+
+.apps-card {
+    min-height: 360px;
+}
+
+.chart-area {
+    position: relative;
+    height: 225px;
+    border: 1px solid #e4e9ef;
+    border-radius: 4px;
+    background:
+        linear-gradient(to top, transparent 0, transparent 24px, rgba(0, 0, 0, 0.035) 25px) repeat-y,
+        linear-gradient(to right, rgba(0, 0, 0, 0.035) 1px, transparent 1px) repeat-x,
+        #fbfcfd;
+    background-size: 100% 44px, 38px 100%, auto;
+    overflow: hidden;
+}
+
+.chart-line {
+    position: absolute;
+    left: 0;
+    right: 0;
+    height: 2px;
+    opacity: 0.95;
+}
+
+.line-blue {
+    top: 90px;
+    background: linear-gradient(90deg, transparent 0%, #2d6db7 18%, #2d6db7 88%, transparent 100%);
+    transform: rotate(-4deg);
+}
+
+.line-green {
+    top: 126px;
+    background: linear-gradient(90deg, transparent 0%, #3d8b59 18%, #3d8b59 88%, transparent 100%);
+    transform: rotate(5deg);
+}
+
+.line-orange {
+    top: 160px;
+    background: linear-gradient(90deg, transparent 0%, #d08b2e 18%, #d08b2e 88%, transparent 100%);
+    transform: rotate(-2deg);
+}
+
+.chart-metrics {
+    display: grid;
+    grid-template-columns: repeat(3, 1fr);
+    gap: 10px;
+    margin-top: 14px;
+}
+
+.chart-metrics span {
+    display: block;
+    color: #6b7280;
+    font-size: 12px;
+    margin-bottom: 4px;
+}
+
+.chart-metrics strong {
+    color: #111827;
+    font-size: 18px;
+}
+
+.app-list {
+    display: grid;
+    gap: 14px;
+}
+
+.app-row {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    gap: 10px;
+    padding: 12px 0;
+    border-bottom: 1px solid #e4e8ee;
+}
+
+.app-row:last-child {
+    border-bottom: 0;
+}
+
+.app-row button {
+    border: 1px solid #9aa5b2;
+    background: #fff;
+    border-radius: 4px;
+    height: 30px;
+    padding: 0 12px;
+    cursor: pointer;
+}
+
+.notif-item {
+    padding: 12px 0;
+    border-bottom: 1px solid #e4e8ee;
+    font-size: 14px;
+}
+
+.notif-item:last-child {
+    border-bottom: 0;
+}
+
+.logo-watermark {
+    min-height: 180px;
+    background: url("../img/cofrap-logo.png") center 58% / 180px auto no-repeat, #f8fafc;
+}
+
+@media (max-width: 1050px) {
+
+    .dash-grid,
+    .dash-main {
+        grid-template-columns: 1fr;
+    }
+
+    .dash-side {
+        border-left: 0;
+        border-top: 1px solid var(--border);
+    }
+}
+
+@media (max-width: 760px) {
+    .app-shell {
+        width: min(100% - 18px, 1260px);
+        padding-top: 16px;
+    }
+
+    .home-screen,
+    .login-screen {
+        min-height: calc(100vh - 24px);
+    }
+
+    .home-card,
+    .login-card {
+        width: 100%;
+    }
+
+    .login-screen h1 {
+        font-size: 24px;
+    }
+
+    .dash-topbar {
+        flex-direction: column;
+        align-items: flex-start;
+        gap: 10px;
+    }
+
+    .chart-metrics {
+        grid-template-columns: 1fr;
+    }
+
+    .dash-main,
+    .dash-side {
+        padding: 12px;
+    }
+}
+
+*** End Patch

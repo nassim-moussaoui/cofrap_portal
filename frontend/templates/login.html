@@ -1,0 +1,101 @@
+{% extends "base.html" %} {% block content %}
+<section class="login-screen">
+  <div class="login-brand">
+    <img
+      src="{{ url_for('static', filename='img/cofrap-logo.png') }}"
+      alt="COFRAP"
+      class="login-logo"
+    />
+  </div>
+
+  {% if otp_pending %}
+  <h1>Double Authentification (MFA)</h1>
+  <div class="login-card mfa-card">
+    {% if error %}
+    <div class="login-error">{{ error }}</div>
+    {% endif %}
+    <p class="login-helper">
+      Veuillez saisir le code genere par votre application d'authentification.
+    </p>
+    <form method="POST" class="login-form otp-form" id="otp-form">
+      <input type="hidden" name="stage" value="otp" />
+      <label>Code d'Authentification a 6 Chiffres</label>
+      <div class="otp-inputs" id="otp-inputs">
+        <input type="text" maxlength="1" inputmode="numeric" />
+        <input type="text" maxlength="1" inputmode="numeric" />
+        <input type="text" maxlength="1" inputmode="numeric" />
+        <input type="text" maxlength="1" inputmode="numeric" />
+        <input type="text" maxlength="1" inputmode="numeric" />
+        <input type="text" maxlength="1" inputmode="numeric" />
+      </div>
+      <input type="hidden" id="otp_code" name="otp_code" value="" />
+      <button class="btn primary btn-wide" type="submit">
+        Verifier le Code
+      </button>
+    </form>
+    <p class="login-link">
+      Code non recu ? <a href="#">Essayer une autre methode</a>
+    </p>
+  </div>
+  {% else %}
+  <h1>Connexion a l'Espace Securise</h1>
+  <div class="login-card">
+    {% if error %}
+    <div class="login-error">{{ error }}</div>
+    {% endif %}
+    <form method="POST" class="login-form">
+      <input type="hidden" name="stage" value="credentials" />
+      <label for="username">Nom d'utilisateur</label>
+      <input
+        type="text"
+        id="username"
+        name="username"
+        value="{{ username|default('') }}"
+        placeholder="Nom d'utilisateur"
+        required
+      />
+      <label for="password">Mot de passe</label>
+      <input
+        type="password"
+        id="password"
+        name="password"
+        placeholder="••••••••"
+        required
+      />
+      <button class="btn primary btn-wide" type="submit">Se connecter</button>
+    </form>
+    <p class="login-link"><a href="#">Mot de passe oublie ?</a></p>
+  </div>
+  {% endif %}
+</section>
+
+<script>
+  (function () {
+    const form = document.getElementById("otp-form");
+    if (!form) return;
+    const inputs = Array.from(document.querySelectorAll("#otp-inputs input"));
+    const hidden = document.getElementById("otp_code");
+
+    const sync = () => {
+      hidden.value = inputs.map((input) => input.value).join("");
+    };
+
+    inputs.forEach((input, index) => {
+      input.addEventListener("input", (event) => {
+        event.target.value = event.target.value.replace(/\D/g, "").slice(0, 1);
+        sync();
+        if (event.target.value && index < inputs.length - 1) {
+          inputs[index + 1].focus();
+        }
+      });
+      input.addEventListener("keydown", (event) => {
+        if (event.key === "Backspace" && !input.value && index > 0) {
+          inputs[index - 1].focus();
+        }
+      });
+    });
+
+    form.addEventListener("submit", sync);
+  })();
+</script>
+{% endblock %}

@@ -1,0 +1,150 @@
+{% extends "base.html" %} {% block content %}
+<section class="split-layout">
+  <div class="panel-card">
+    <p class="eyebrow">Étape 1 · Enrôlement d’un collaborateur</p>
+    <h1>Création d’un accès sécurisé initial</h1>
+    <p class="lead">
+      Cette étape génère un identifiant sécurisé initial pour permettre au
+      collaborateur d’activer son accès.
+    </p>
+
+    {% if error %}
+    <div class="message error">{{ error }}</div>
+    {% endif %}
+
+    <form method="POST" class="form-grid">
+      <div class="field-group">
+        <label for="username">Nom d’utilisateur</label>
+        <input
+          type="text"
+          id="username"
+          name="username"
+          value="{{ username|default('') }}"
+          placeholder="ex : cduval"
+          required
+        />
+      </div>
+
+      <div class="field-group">
+        <label for="full_name"
+          >Nom complet fictif <span class="field-note">optionnel</span></label
+        >
+        <input
+          type="text"
+          id="full_name"
+          name="full_name"
+          value="{{ full_name|default('') }}"
+          placeholder="ex : Camille Duval"
+        />
+      </div>
+
+      <div class="field-group">
+        <label for="service"
+          >Service / entité <span class="field-note">optionnel</span></label
+        >
+        <input
+          type="text"
+          id="service"
+          name="service"
+          value="{{ service|default('') }}"
+          placeholder="ex : Direction métier cloud"
+        />
+      </div>
+
+      <button class="btn primary btn-wide" type="submit">
+        Générer l’accès initial
+      </button>
+    </form>
+
+    <p class="fine-print">
+      Le mot de passe généré est affiché une seule fois, puis conservé sous
+      forme hachée.
+    </p>
+  </div>
+
+  <aside class="panel-card side-panel">
+    <div class="section-heading">
+      <p class="eyebrow">Ce que fait le portail</p>
+      <h2>Cadre de sécurité</h2>
+    </div>
+
+    <div class="info-list">
+      <div class="info-item">
+        <strong>Génération d’un secret fort</strong>
+        <span
+          >Mot de passe de 24 caractères compatible avec une politique d’accès
+          interne.</span
+        >
+      </div>
+      <div class="info-item">
+        <strong>Stockage sécurisé</strong>
+        <span
+          >Le mot de passe n’est jamais conservé en clair, seule sa version
+          hachée est enregistrée.</span
+        >
+      </div>
+      <div class="info-item">
+        <strong>Transition MFA</strong>
+        <span
+          >Une fois le compte créé, le parcours bascule vers l’activation de la
+          double authentification.</span
+        >
+      </div>
+    </div>
+  </aside>
+</section>
+
+{% if success %}
+<section class="section-block">
+  <div class="confirmation-card panel-card">
+    <div class="confirmation-header">
+      <div>
+        <p class="eyebrow">Accès initial généré</p>
+        <h2>Collaborateur enrôlé avec succès</h2>
+      </div>
+      <span class="badge badge-success">Compte créé</span>
+    </div>
+
+    <div class="metadata-row">
+      <span class="badge badge-neutral">Identifiant : {{ username }}</span>
+      {% if full_name %}<span class="badge badge-neutral">{{ full_name }}</span
+      >{% endif %} {% if service %}<span class="badge badge-neutral"
+        >{{ service }}</span
+      >{% endif %}
+    </div>
+
+    <div class="credential-grid">
+      <div class="credential-card">
+        <p class="card-label">Mot de passe initial</p>
+        <code class="credential-value">{{ password }}</code>
+        <p class="fine-print">
+          Ce mot de passe n’est affiché qu’au moment de l’enrôlement.
+        </p>
+      </div>
+
+      <div class="credential-card qr-card">
+        <p class="card-label">QR Code du mot de passe</p>
+        <img
+          src="{{ url_for('static', filename=qr_image) }}"
+          alt="QR Code mot de passe"
+          class="qr-image"
+        />
+        <p class="fine-print">
+          Transmission ponctuelle de l’accès initial lors de l’enrôlement.
+        </p>
+      </div>
+    </div>
+
+    <div class="actions-row">
+      <a
+        class="btn primary"
+        href="{{ url_for('activate_2fa', username=username) }}"
+        >Continuer vers l’activation 2FA</a
+      >
+      <a class="btn secondary" href="{{ url_for('login', username=username) }}"
+        >Tester la connexion sécurisée</a
+      >
+    </div>
+  </div>
+</section>
+{% endif %} {% endblock %}

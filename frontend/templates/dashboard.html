@@ -1,0 +1,77 @@
+{% extends "base.html" %} {% block content %}
+<header class="dash-topbar">
+  <div class="dash-brand">
+    <img
+      src="{{ url_for('static', filename='img/cofrap-logo.png') }}"
+      alt="COFRAP"
+      class="dash-logo"
+    />
+    <div>
+      <strong>COFRAP</strong>
+      <p>Compagnie Francaise de Realisation d'Applicatifs Professionnels</p>
+    </div>
+  </div>
+
+  <div class="dash-user">
+    <span
+      >Utilisateur : {% if username %}{{ username }}{% else %}P. Durand{% endif
+      %}</span
+    >
+    <button class="dash-logout">Deconnexion</button>
+  </div>
+</header>
+
+<nav class="dash-tabs">
+  <a class="active" href="#">Apercu</a>
+  <a href="#">Mes Projets</a>
+  <a href="#">Ressources</a>
+  <a href="#">Demandes</a>
+  <a href="#">Profil</a>
+</nav>
+
+<section class="dash-grid">
+  <div class="dash-main">
+    <article class="dash-card chart-card">
+      <div class="card-head">
+        <h2>Performances des Applicatifs - 30 Jours</h2>
+      </div>
+      <div class="chart-area">
+        <div class="chart-line line-blue"></div>
+        <div class="chart-line line-green"></div>
+        <div class="chart-line line-orange"></div>
+      </div>
+      <div class="chart-metrics">
+        <div><span>Temps de Reponse Moyen</span><strong>120ms</strong></div>
+        <div><span>Taux d'Erreurs</span><strong>0.1%</strong></div>
+        <div><span>Volume API Quotidien</span><strong>250k</strong></div>
+      </div>
+    </article>
+
+    <article class="dash-card apps-card">
+      <div class="card-head">
+        <h2>Mes Applicatifs Actifs</h2>
+      </div>
+      <div class="app-list">
+        <div class="app-row">
+          <span>Application A (v2.1)</span><button>Lancer</button>
+        </div>
+        <div class="app-row">
+          <span>Application B (v1.0)</span><button>Lancer</button>
+        </div>
+        <div class="app-row">
+          <span>Portail RH</span><button>Lancer</button>
+        </div>
+      </div>
+    </article>
+  </div>
+
+  <aside class="dash-side">
+    <article class="dash-card notif-card">
+      <h2>Notifications et Taches</h2>
+      <div class="notif-item">1 Nouvelle Tache de Validation</div>
+      <div class="notif-item">Maintenance Systeme - Vendredi 14h</div>
+    </article>
+    <article class="dash-card logo-watermark"></article>
+  </aside>
+</section>
+{% endblock %}
