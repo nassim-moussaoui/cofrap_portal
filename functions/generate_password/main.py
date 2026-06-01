@@ -1,18 +1,23 @@
 import os
 import secrets
 import string
+import sys
 from pathlib import Path
 
 import qrcode
 import bcrypt
 import psycopg2
 
+ROOT_DIR = Path(__file__).resolve().parents[2]
+if str(ROOT_DIR) not in sys.path:
+    sys.path.insert(0, str(ROOT_DIR))
+
 from env_utils import load_env_file
 
 
 PASSWORD_LENGTH = 24
 
-BASE_DIR = Path(__file__).resolve().parents[2]
+BASE_DIR = ROOT_DIR
 load_env_file(BASE_DIR / ".env")
 
 OUTPUT_DIR = Path("outputs")

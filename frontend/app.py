@@ -1,5 +1,6 @@
 from datetime import datetime, timedelta
 import os
+import sys
 from pathlib import Path
 
 import bcrypt
@@ -9,6 +10,10 @@ import qrcode
 import secrets
 import string
 from flask import Flask, redirect, render_template, request, session, url_for
+
+ROOT_DIR = Path(__file__).resolve().parent.parent
+if str(ROOT_DIR) not in sys.path:
+    sys.path.insert(0, str(ROOT_DIR))
 
 from env_utils import load_env_file
 
@@ -63,7 +68,7 @@ CLOUD_APPS = [
     },
 ]
 
-BASE_DIR = Path(__file__).resolve().parent.parent
+BASE_DIR = ROOT_DIR
 load_env_file(BASE_DIR / ".env")
 OUTPUT_DIR = BASE_DIR / "frontend" / "static" / "generated"
 OUTPUT_DIR.mkdir(parents=True, exist_ok=True)

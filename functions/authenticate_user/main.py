@@ -1,17 +1,22 @@
 from pathlib import Path
 import os
+import sys
 from datetime import datetime, timedelta
 
 import bcrypt
 import psycopg2
 import pyotp
 
+ROOT_DIR = Path(__file__).resolve().parents[2]
+if str(ROOT_DIR) not in sys.path:
+    sys.path.insert(0, str(ROOT_DIR))
+
 from env_utils import load_env_file
 
 
 PASSWORD_VALIDITY_DAYS = 180
 
-BASE_DIR = Path(__file__).resolve().parents[2]
+BASE_DIR = ROOT_DIR
 load_env_file(BASE_DIR / ".env")
 
 DB_HOST = os.getenv("COFRAP_DB_HOST", "127.0.0.1")
