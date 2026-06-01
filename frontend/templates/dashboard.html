@@ -1,77 +1,142 @@
 {% extends "base.html" %} {% block content %}
-<header class="dash-topbar">
-  <div class="dash-brand">
-    <img
-      src="{{ url_for('static', filename='img/cofrap-logo.png') }}"
-      alt="COFRAP"
-      class="dash-logo"
-    />
-    <div>
-      <strong>COFRAP</strong>
-      <p>Compagnie Francaise de Realisation d'Applicatifs Professionnels</p>
+<section class="dash-page">
+  <header class="dash-topbar">
+    <div class="dash-brand">
+      <img
+        src="{{ url_for('static', filename='img/cofrap-logo.png') }}"
+        alt="COFRAP"
+        class="dash-logo"
+      />
+      <div>
+        <span>COFRAP</span>
+        <strong>Tableau de bord interne</strong>
+      </div>
     </div>
-  </div>
 
-  <div class="dash-user">
-    <span
-      >Utilisateur : {% if username %}{{ username }}{% else %}P. Durand{% endif
-      %}</span
-    >
-    <button class="dash-logout">Deconnexion</button>
-  </div>
-</header>
+    <div class="dash-user">
+      <div>
+        <small>Connecté en tant que</small>
+        <strong
+          >{% if username %}{{ username }}{% else %}P. Durand{% endif %}</strong
+        >
+      </div>
+      <button class="dash-logout">Déconnexion</button>
+    </div>
+  </header>
 
-<nav class="dash-tabs">
-  <a class="active" href="#">Apercu</a>
-  <a href="#">Mes Projets</a>
-  <a href="#">Ressources</a>
-  <a href="#">Demandes</a>
-  <a href="#">Profil</a>
-</nav>
+  <div class="dash-shell">
+    <aside class="dash-sidebar">
+      <div class="dash-nav-group">
+        <span class="dash-nav-label">Navigation</span>
+        <a class="active" href="#">Aperçu</a>
+        <a href="#">Applications</a>
+        <a href="#">Ressources</a>
+        <a href="#">Demandes</a>
+        <a href="#">Profil</a>
+      </div>
 
-<section class="dash-grid">
-  <div class="dash-main">
-    <article class="dash-card chart-card">
-      <div class="card-head">
-        <h2>Performances des Applicatifs - 30 Jours</h2>
+      <div class="dash-status-card">
+        <span>Etat du portail</span>
+        <strong>Opérationnel</strong>
+        <p>Accès sécurisé et journalisation active.</p>
       </div>
-      <div class="chart-area">
-        <div class="chart-line line-blue"></div>
-        <div class="chart-line line-green"></div>
-        <div class="chart-line line-orange"></div>
-      </div>
-      <div class="chart-metrics">
-        <div><span>Temps de Reponse Moyen</span><strong>120ms</strong></div>
-        <div><span>Taux d'Erreurs</span><strong>0.1%</strong></div>
-        <div><span>Volume API Quotidien</span><strong>250k</strong></div>
-      </div>
-    </article>
+    </aside>
 
-    <article class="dash-card apps-card">
-      <div class="card-head">
-        <h2>Mes Applicatifs Actifs</h2>
-      </div>
-      <div class="app-list">
-        <div class="app-row">
-          <span>Application A (v2.1)</span><button>Lancer</button>
+    <section class="dash-content">
+      <div class="dash-hero-card">
+        <div>
+          <span class="hero-kicker">Vue globale</span>
+          <h1>Supervision des services internes</h1>
+          <p>
+            Un espace fictif de pilotage avec données synthétiques, pensé pour
+            une présentation moderne et crédible.
+          </p>
         </div>
-        <div class="app-row">
-          <span>Application B (v1.0)</span><button>Lancer</button>
-        </div>
-        <div class="app-row">
-          <span>Portail RH</span><button>Lancer</button>
-        </div>
+        <div class="dash-hero-pill">Authentification MFA active</div>
       </div>
-    </article>
-  </div>
 
-  <aside class="dash-side">
-    <article class="dash-card notif-card">
-      <h2>Notifications et Taches</h2>
-      <div class="notif-item">1 Nouvelle Tache de Validation</div>
-      <div class="notif-item">Maintenance Systeme - Vendredi 14h</div>
-    </article>
-    <article class="dash-card logo-watermark"></article>
-  </aside>
+      <section class="dash-metrics">
+        <article>
+          <span>Sessions actives</span>
+          <strong>128</strong>
+        </article>
+        <article>
+          <span>Temps de réponse</span>
+          <strong>118 ms</strong>
+        </article>
+        <article>
+          <span>Incidents ouverts</span>
+          <strong>4</strong>
+        </article>
+        <article>
+          <span>Disponibilité</span>
+          <strong>99.98%</strong>
+        </article>
+      </section>
+
+      <section class="dash-grid-modern">
+        <article class="dash-card chart-card">
+          <div class="card-head">
+            <h2>Performance applicative</h2>
+            <span>30 jours</span>
+          </div>
+          <div class="chart-area">
+            <div class="chart-line line-blue"></div>
+            <div class="chart-line line-green"></div>
+            <div class="chart-line line-orange"></div>
+          </div>
+          <div class="chart-metrics">
+            <div><span>Réponse moyenne</span><strong>120 ms</strong></div>
+            <div><span>Volume API</span><strong>250k</strong></div>
+            <div><span>Taux d’erreurs</span><strong>0.1%</strong></div>
+          </div>
+        </article>
+
+        <article class="dash-card apps-card">
+          <div class="card-head">
+            <h2>Applications prioritaires</h2>
+            <span>Disponibles maintenant</span>
+          </div>
+          <div class="app-list modern-list">
+            <div class="app-row">
+              <div>
+                <strong>Application A</strong>
+                <span>ERP commercial - v2.1</span>
+              </div>
+              <button>Lancer</button>
+            </div>
+            <div class="app-row">
+              <div>
+                <strong>Portail RH</strong>
+                <span>Accès collaborateurs - v1.0</span>
+              </div>
+              <button>Lancer</button>
+            </div>
+            <div class="app-row">
+              <div>
+                <strong>Support client</strong>
+                <span>Tickets et demandes - v3.4</span>
+              </div>
+              <button>Lancer</button>
+            </div>
+          </div>
+        </article>
+      </section>
+
+      <section class="dash-bottom-grid">
+        <article class="dash-card notif-card">
+          <div class="card-head">
+            <h2>Notifications</h2>
+            <span>Temps réel</span>
+          </div>
+          <div class="notif-item">1 nouvelle demande de validation</div>
+          <div class="notif-item">Maintenance système vendredi à 14h</div>
+          <div class="notif-item">3 comptes à renouveler cette semaine</div>
+        </article>
+
+        <article class="dash-card logo-watermark"></article>
+      </section>
+    </section>
+  </div>
 </section>
 {% endblock %}

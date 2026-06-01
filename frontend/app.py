@@ -240,7 +240,7 @@ def is_account_expired(gendate: datetime, expired: bool) -> bool:
 
 @app.route("/")
 def index():
-    return render_template("index.html", service_status=PORTAL_STATUS)
+    return redirect(url_for("login"))
 
 
 @app.route("/create-user", methods=["GET", "POST"])
@@ -279,6 +279,112 @@ def create_user():
         )
 
     return render_template("create_user.html")
+
+
+@app.route("/first-connection", methods=["GET", "POST"])
+def first_connection():
+    step = session.get("first_connection_step", "username")
+    username = session.get("first_connection_username", "").strip()
+    password = session.get("first_connection_password", "")
+    password_qr = session.get("first_connection_password_qr", "")
+    mfa_qr = session.get("first_connection_mfa_qr", "")
+
+    if request.method == "POST":
+        action = request.form.get("action", "start")
+
+        if action == "start":
+            username = request.form.get("username", "").strip()
+
+            if not username:
+                return render_template(
+                    "first_connection.html",
+                    step="username",
+                    error="Le nom d’utilisateur est obligatoire.",
+                    username=username,
+                )
+
+            password = generate_secure_password()
+            password_hash = hash_password(password)
+            create_or_update_user(username, password_hash)
+
+            password_qr = generate_qr_code(
+                password,
+                f"{username}_password_qr.png",
+            )
+
+            session["first_connection_step"] = "password"
+            session["first_connection_username"] = username
+            session["first_connection_password"] = password
+            session["first_connection_password_qr"] = password_qr
+
+            return render_template(
+                "first_connection.html",
+                step="password",
+                username=username,
+                password=password,
+                password_qr=password_qr,
+            )
+
+        if action == "configure_mfa":
+            username = session.get("first_connection_username", "").strip()
+            password = session.get("first_connection_password", "")
+
+            if not username or not password:
+                session.pop("first_connection_step", None)
+                session.pop("first_connection_username", None)
+                session.pop("first_connection_password", None)
+                session.pop("first_connection_password_qr", None)
+                session.pop("first_connection_mfa_qr", None)
+                return redirect(url_for("first_connection"))
+
+            secret = pyotp.random_base32()
+            totp = pyotp.TOTP(secret)
+            totp_uri = totp.provisioning_uri(name=username, issuer_name="COFRAP")
+            mfa_qr = generate_qr_code(totp_uri, f"{username}_2fa_qr.png")
+            save_2fa_secret(username, secret)
+
+            session["first_connection_step"] = "mfa"
+            session["first_connection_mfa_secret"] = secret
+            session["first_connection_mfa_qr"] = mfa_qr
+
+            return render_template(
+                "first_connection.html",
+                step="mfa",
+                username=username,
+                password=password,
+                password_qr=session.get("first_connection_password_qr", ""),
+                mfa_qr=mfa_qr,
+            )
+
+        if action == "finish":
+            session.pop("first_connection_step", None)
+            session.pop("first_connection_username", None)
+            session.pop("first_connection_password", None)
+            session.pop("first_connection_password_qr", None)
+            session.pop("first_connection_mfa_qr", None)
+            session.pop("first_connection_mfa_secret", None)
+            return redirect(url_for("login", username=username))
+
+    if step == "password" and username and password:
+        return render_template(
+            "first_connection.html",
+            step="password",
+            username=username,
+            password=password,
+            password_qr=password_qr,
+        )
+
+    if step == "mfa" and username and password:
+        return render_template(
+            "first_connection.html",
+            step="mfa",
+            username=username,
+            password=password,
+            password_qr=password_qr,
+            mfa_qr=mfa_qr,
+        )
+
+    return render_template("first_connection.html", step="username")
 
 
 @app.route("/activate-2fa", methods=["GET", "POST"])

@@ -1,21 +1,61 @@
 {% extends "base.html" %} {% block content %}
 <section class="home-screen">
-  <div class="home-brand">
+  <header class="hero-brand">
     <img
       src="{{ url_for('static', filename='img/cofrap-logo.png') }}"
       alt="COFRAP"
-      class="home-logo"
+      class="hero-logo"
     />
-    <div>
-      <h1>COFRAP</h1>
-      <p>Compagnie Francaise de Realisation d'Applicatifs Professionnels</p>
+    <div class="hero-brand-copy">
+      <span>Portail interne</span>
+      <strong>COFRAP</strong>
     </div>
-  </div>
+  </header>
 
-  <div class="home-card">
-    <h2>Portail employe</h2>
-    <p>Acces interne aux outils et aux applications COFRAP.</p>
-    <a class="btn primary" href="{{ url_for('login') }}">Connexion</a>
+  <div class="hero-layout">
+    <div class="hero-copy">
+      <p class="eyebrow">Accès collaborateurs</p>
+      <h1>Un portail interne propre, rapide et crédible.</h1>
+      <p class="hero-text">
+        Une interface sobre pour présenter l’accès sécurisé COFRAP, avec
+        authentification forte et tableau de bord fictif de type back-office.
+      </p>
+
+      <div class="hero-actions">
+        <a class="btn primary btn-lg" href="{{ url_for('login') }}"
+          >Connexion</a
+        >
+        <div class="status-pill">Système en service</div>
+      </div>
+
+      <div class="hero-metrics">
+        <article>
+          <strong>24/7</strong>
+          <span>Disponibilité portail</span>
+        </article>
+        <article>
+          <strong>2 étapes</strong>
+          <span>Mot de passe + MFA</span>
+        </article>
+        <article>
+          <strong>180 j</strong>
+          <span>Renouvellement des identifiants</span>
+        </article>
+      </div>
+    </div>
+
+    <aside class="hero-card">
+      <div class="hero-card-badge">Espace sécurisé</div>
+      <h2>Accès interne COFRAP</h2>
+      <p>
+        Connexion réservée aux collaborateurs autorisés avec une seconde
+        vérification à usage temporaire.
+      </p>
+      <div class="hero-card-panel">
+        <span>Flux actif</span>
+        <strong>Authentification protégée</strong>
+      </div>
+    </aside>
   </div>
 </section>
 {% endblock %}

@@ -1,25 +1,18 @@
 {% extends "base.html" %} {% block content %}
-<section class="login-screen">
-  <div class="login-brand">
-    <img
-      src="{{ url_for('static', filename='img/cofrap-logo.png') }}"
-      alt="COFRAP"
-      class="login-logo"
-    />
-  </div>
-
-  {% if otp_pending %}
-  <h1>Double Authentification (MFA)</h1>
-  <div class="login-card mfa-card">
+<section class="login-shell">
+  <div class="login-card login-card-modern">
+    {% if otp_pending %}
+    <div class="auth-kicker">Double authentification</div>
+    <h1>Vérification MFA</h1>
+    <p class="auth-subtitle">
+      Entre le code temporaire généré par ton application.
+    </p>
     {% if error %}
     <div class="login-error">{{ error }}</div>
     {% endif %}
-    <p class="login-helper">
-      Veuillez saisir le code genere par votre application d'authentification.
-    </p>
     <form method="POST" class="login-form otp-form" id="otp-form">
       <input type="hidden" name="stage" value="otp" />
-      <label>Code d'Authentification a 6 Chiffres</label>
+      <label>Code à 6 chiffres</label>
       <div class="otp-inputs" id="otp-inputs">
         <input type="text" maxlength="1" inputmode="numeric" />
         <input type="text" maxlength="1" inputmode="numeric" />
@@ -29,17 +22,16 @@
         <input type="text" maxlength="1" inputmode="numeric" />
       </div>
       <input type="hidden" id="otp_code" name="otp_code" value="" />
-      <button class="btn primary btn-wide" type="submit">
-        Verifier le Code
+      <button class="btn primary btn-wide btn-xl" type="submit">
+        Vérifier
       </button>
     </form>
-    <p class="login-link">
-      Code non recu ? <a href="#">Essayer une autre methode</a>
+    {% else %}
+    <div class="auth-kicker">Connexion</div>
+    <h1>Accès au portail</h1>
+    <p class="auth-subtitle">
+      Connecte-toi avec ton identifiant COFRAP et ton mot de passe.
     </p>
-  </div>
-  {% else %}
-  <h1>Connexion a l'Espace Securise</h1>
-  <div class="login-card">
     {% if error %}
     <div class="login-error">{{ error }}</div>
     {% endif %}
@@ -62,11 +54,18 @@
         placeholder="••••••••"
         required
       />
-      <button class="btn primary btn-wide" type="submit">Se connecter</button>
+      <button class="btn primary btn-wide btn-xl" type="submit">
+        Continuer
+      </button>
     </form>
-    <p class="login-link"><a href="#">Mot de passe oublie ?</a></p>
+    <a
+      class="btn secondary btn-wide btn-xl"
+      href="{{ url_for('first_connection') }}"
+    >
+      Première connexion
+    </a>
+    {% endif %}
   </div>
-  {% endif %}
 </section>
 
 <script>

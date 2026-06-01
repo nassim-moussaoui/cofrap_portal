@@ -2,15 +2,17 @@
 <html lang="fr">
   <head>
     <meta charset="UTF-8" />
-    <title>COFRAP - Portail employe</title>
+    <title>COFRAP - Portail sécurisé</title>
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
     <link
       rel="stylesheet"
       href="{{ url_for('static', filename='css/style.css') }}"
     />
   </head>
-  <body>
-    <div class="site-backdrop"></div>
+  <body class="page-shell">
+    <div class="ambient ambient-one"></div>
+    <div class="ambient ambient-two"></div>
+    <div class="ambient ambient-three"></div>
     <main class="app-shell">{% block content %}{% endblock %}</main>
   </body>
 </html>

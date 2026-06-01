@@ -1,0 +1,135 @@
+{% extends "base.html" %} {% block content %}
+<section class="setup-shell">
+  <div class="setup-card">
+    <div class="auth-kicker">Première connexion</div>
+    <h1>Initialisation du compte</h1>
+    <p class="auth-subtitle">
+      Saisis ton nom d'utilisateur, puis récupère ton mot de passe et configure
+      l'A2F avant de revenir au login.
+    </p>
+
+    {% if error %}
+    <div class="login-error">{{ error }}</div>
+    {% endif %} {% if step == "username" %}
+    <form method="POST" class="login-form setup-form">
+      <input type="hidden" name="action" value="start" />
+      <label for="username">Nom d'utilisateur</label>
+      <input
+        type="text"
+        id="username"
+        name="username"
+        value="{{ username|default('') }}"
+        placeholder="Nom d'utilisateur"
+        required
+      />
+      <button class="btn primary btn-wide btn-xl" type="submit">
+        Générer le mot de passe
+      </button>
+      <a class="btn secondary btn-wide btn-xl" href="{{ url_for('login') }}">
+        Retour au login
+      </a>
+    </form>
+    {% elif step == "password" %}
+    <div class="setup-section">
+      <div class="setup-block">
+        <span class="setup-label">Mot de passe généré</span>
+        <div class="password-field">
+          <input
+            id="generated-password"
+            type="password"
+            value="{{ password }}"
+            readonly
+          />
+          <button class="btn secondary" type="button" id="toggle-password">
+            Afficher
+          </button>
+          <button class="btn secondary" type="button" id="copy-password">
+            Copier
+          </button>
+        </div>
+        <p class="setup-help">
+          Copie ce mot de passe et garde-le en lieu sûr. Il sera demandé à la
+          première connexion.
+        </p>
+      </div>
+
+      <div class="setup-block">
+        <span class="setup-label">Étape suivante</span>
+        <p class="setup-help">
+          Clique sur le bouton ci-dessous pour générer le QR code A2F à scanner
+          dans Authenticator.
+        </p>
+        <form method="POST">
+          <input type="hidden" name="action" value="configure_mfa" />
+          <button class="btn primary btn-wide btn-xl" type="submit">
+            Configurer l'A2F
+          </button>
+        </form>
+      </div>
+    </div>
+    {% elif step == "mfa" %}
+    <div class="setup-section setup-section-tight">
+      <div class="setup-block">
+        <span class="setup-label">QR code A2F</span>
+        <img
+          class="setup-qr"
+          src="{{ url_for('static', filename=mfa_qr) }}"
+          alt="QR code Authenticator"
+        />
+      </div>
+
+      <div class="setup-block">
+        <span class="setup-label">Instructions</span>
+        <p class="setup-help">
+          Scanne ce QR code avec Microsoft Authenticator ou Google
+          Authenticator, puis valide la configuration avant de continuer vers le
+          login.
+        </p>
+        <ul class="setup-list">
+          <li>Ouvre ton application d'authentification.</li>
+          <li>Ajoute un nouveau compte via QR code.</li>
+          <li>Scanne l'image affichée à l'écran.</li>
+          <li>Une fois terminé, reviens sur le portail de connexion.</li>
+        </ul>
+        <form method="POST">
+          <input type="hidden" name="action" value="finish" />
+          <button class="btn primary btn-wide btn-xl" type="submit">
+            J'ai configuré l'A2F
+          </button>
+        </form>
+      </div>
+    </div>
+    {% endif %}
+  </div>
+</section>
+
+<script>
+  (function () {
+    const passwordInput = document.getElementById("generated-password");
+    const toggleButton = document.getElementById("toggle-password");
+    const copyButton = document.getElementById("copy-password");
+
+    if (passwordInput && toggleButton) {
+      toggleButton.addEventListener("click", () => {
+        const isHidden = passwordInput.type === "password";
+        passwordInput.type = isHidden ? "text" : "password";
+        toggleButton.textContent = isHidden ? "Masquer" : "Afficher";
+      });
+    }
+
+    if (passwordInput && copyButton) {
+      copyButton.addEventListener("click", async () => {
+        try {
+          await navigator.clipboard.writeText(passwordInput.value);
+          copyButton.textContent = "Copié";
+          setTimeout(() => {
+            copyButton.textContent = "Copier";
+          }, 1400);
+        } catch (error) {
+          copyButton.textContent = "Erreur";
+        }
+      });
+    }
+  })();
+</script>
+{% endblock %}
