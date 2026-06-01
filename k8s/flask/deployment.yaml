@@ -1,0 +1,59 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: flask
+  namespace: cofrap
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      app: flask
+  template:
+    metadata:
+      labels:
+        app: flask
+    spec:
+      containers:
+        - name: flask
+          # Remplace par ton image Docker Hub : ton-username/cofrap-flask:latest
+          image: your-dockerhub-username/cofrap-flask:latest
+          ports:
+            - containerPort: 5000
+          env:
+            - name: FLASK_SECRET_KEY
+              valueFrom:
+                secretKeyRef:
+                  name: cofrap-secrets
+                  key: FLASK_SECRET_KEY
+            - name: COFRAP_DB_HOST
+              valueFrom:
+                configMapKeyRef:
+                  name: cofrap-config
+                  key: COFRAP_DB_HOST
+            - name: COFRAP_DB_PORT
+              valueFrom:
+                configMapKeyRef:
+                  name: cofrap-config
+                  key: COFRAP_DB_PORT
+            - name: COFRAP_DB_NAME
+              valueFrom:
+                configMapKeyRef:
+                  name: cofrap-config
+                  key: COFRAP_DB_NAME
+            - name: COFRAP_DB_USER
+              valueFrom:
+                configMapKeyRef:
+                  name: cofrap-config
+                  key: COFRAP_DB_USER
+            - name: COFRAP_DB_PASSWORD
+              valueFrom:
+                secretKeyRef:
+                  name: cofrap-secrets
+                  key: COFRAP_DB_PASSWORD
+          volumeMounts:
+            - name: generated-qrcodes
+              mountPath: /app/frontend/static/generated
+      volumes:
+        - name: generated-qrcodes
+          persistentVolumeClaim:
+            claimName: flask-generated-pvc

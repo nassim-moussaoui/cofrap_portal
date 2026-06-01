@@ -1,0 +1,14 @@
+apiVersion: v1
+kind: PersistentVolumeClaim
+metadata:
+  name: flask-generated-pvc
+  namespace: cofrap
+spec:
+  accessModes:
+    - ReadWriteOnce
+  resources:
+    requests:
+      storage: 500Mi
+  # storageClassName: standard        # Minikube / Kind
+  # storageClassName: standard-rwo    # GKE
+  # storageClassName: gp2             # EKS

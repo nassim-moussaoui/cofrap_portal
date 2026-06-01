@@ -1,0 +1,12 @@
+apiVersion: v1
+kind: ConfigMap
+metadata:
+  name: cofrap-config
+  namespace: cofrap
+data:
+  COFRAP_DB_HOST: "postgres-service"
+  COFRAP_DB_PORT: "5432"
+  COFRAP_DB_NAME: "cofrap_db"
+  COFRAP_DB_USER: "cofrap_user"
+  POSTGRES_DB: "cofrap_db"
+  POSTGRES_USER: "cofrap_user"
