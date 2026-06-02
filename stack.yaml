@@ -1,0 +1,50 @@
+version: 1.0
+provider:
+  name: openfaas
+  gateway: http://127.0.0.1:8080
+
+functions:
+  generate-password:
+    lang: python3-http
+    handler: ./functions/generate_password
+    image: yassineadn/cofrap-fn-generate-password:latest
+    namespace: openfaas-fn
+    annotations:
+      com.openfaas.imagePullPolicy: "Never"
+    environment:
+      COFRAP_DB_HOST: postgres-service.cofrap
+      COFRAP_DB_PORT: "5432"
+      COFRAP_DB_NAME: cofrap_db
+      COFRAP_DB_USER: cofrap_user
+    secrets:
+      - cofrap-db-password
+
+  generate-2fa:
+    lang: python3-http
+    handler: ./functions/generate_2fa
+    image: yassineadn/cofrap-fn-generate-2fa:latest
+    namespace: openfaas-fn
+    annotations:
+      com.openfaas.imagePullPolicy: "Never"
+    environment:
+      COFRAP_DB_HOST: postgres-service.cofrap
+      COFRAP_DB_PORT: "5432"
+      COFRAP_DB_NAME: cofrap_db
+      COFRAP_DB_USER: cofrap_user
+    secrets:
+      - cofrap-db-password
+
+  authenticate-user:
+    lang: python3-http
+    handler: ./functions/authenticate_user
+    image: yassineadn/cofrap-fn-authenticate-user:latest
+    namespace: openfaas-fn
+    annotations:
+      com.openfaas.imagePullPolicy: "Never"
+    environment:
+      COFRAP_DB_HOST: postgres-service.cofrap
+      COFRAP_DB_PORT: "5432"
+      COFRAP_DB_NAME: cofrap_db
+      COFRAP_DB_USER: cofrap_user
+    secrets:
+      - cofrap-db-password

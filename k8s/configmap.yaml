@@ -10,3 +10,4 @@ data:
   COFRAP_DB_USER: "cofrap_user"
   POSTGRES_DB: "cofrap_db"
   POSTGRES_USER: "cofrap_user"
+  OPENFAAS_GATEWAY_URL: "http://gateway.openfaas:8080"

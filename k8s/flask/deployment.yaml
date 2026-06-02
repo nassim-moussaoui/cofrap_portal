@@ -51,6 +51,11 @@ spec:
                 secretKeyRef:
                   name: cofrap-secrets
                   key: COFRAP_DB_PASSWORD
+            - name: OPENFAAS_GATEWAY_URL
+              valueFrom:
+                configMapKeyRef:
+                  name: cofrap-config
+                  key: OPENFAAS_GATEWAY_URL
           volumeMounts:
             - name: generated-qrcodes
               mountPath: /app/frontend/static/generated

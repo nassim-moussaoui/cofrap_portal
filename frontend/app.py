@@ -1,14 +1,9 @@
-from datetime import datetime, timedelta
 import os
 import sys
 from pathlib import Path
 
-import bcrypt
-import psycopg2
-import pyotp
 import qrcode
-import secrets
-import string
+import requests
 from flask import Flask, redirect, render_template, request, session, url_for
 
 ROOT_DIR = Path(__file__).resolve().parent.parent
@@ -17,16 +12,12 @@ if str(ROOT_DIR) not in sys.path:
 
 from env_utils import load_env_file
 
-
 app = Flask(__name__)
 app.config["SECRET_KEY"] = os.getenv("FLASK_SECRET_KEY", "dev-only-change-me")
 
-PASSWORD_LENGTH = 24
-PASSWORD_VALIDITY_DAYS = 180
-
 PORTAL_STATUS = [
     {
-        "label": "Portail d’accès",
+        "label": "Portail d'accès",
         "description": "Accès interne disponible pour les collaborateurs autorisés.",
         "value": "Disponible",
         "state": "ok",
@@ -39,7 +30,7 @@ PORTAL_STATUS = [
     },
     {
         "label": "Rotation des identifiants",
-        "description": "Renouvellement périodique prévu par la politique d’accès.",
+        "description": "Renouvellement périodique prévu par la politique d'accès.",
         "value": "180 jours",
         "state": "neutral",
     },
@@ -63,7 +54,7 @@ CLOUD_APPS = [
     },
     {
         "name": "Reporting métier",
-        "description": "Tableaux de bord consolidés pour les responsables d’activité.",
+        "description": "Tableaux de bord consolidés pour les responsables d'activité.",
         "tag": "Lecture sécurisée",
     },
 ]
@@ -73,169 +64,22 @@ load_env_file(BASE_DIR / ".env")
 OUTPUT_DIR = BASE_DIR / "frontend" / "static" / "generated"
 OUTPUT_DIR.mkdir(parents=True, exist_ok=True)
 
-DB_HOST = os.getenv("COFRAP_DB_HOST", "127.0.0.1")
-DB_PORT = int(os.getenv("COFRAP_DB_PORT", "5433"))
-DB_NAME = os.getenv("COFRAP_DB_NAME", "cofrap_db")
-DB_USER = os.getenv("COFRAP_DB_USER", "cofrap_user")
-DB_PASSWORD = os.getenv("COFRAP_DB_PASSWORD", "cofrap_password")
+OPENFAAS_URL = os.getenv("OPENFAAS_GATEWAY_URL", "http://gateway.openfaas:8080")
 
 
-def get_database_connection():
-    return psycopg2.connect(
-        host=DB_HOST,
-        port=DB_PORT,
-        dbname=DB_NAME,
-        user=DB_USER,
-        password=DB_PASSWORD,
-    )
-
-
-def generate_secure_password(length: int = PASSWORD_LENGTH) -> str:
-    uppercase = string.ascii_uppercase
-    lowercase = string.ascii_lowercase
-    digits = string.digits
-    special_chars = "!@#$%^&*()-_=+[]{};:,.?/"
-
-    password_chars = [
-        secrets.choice(uppercase),
-        secrets.choice(lowercase),
-        secrets.choice(digits),
-        secrets.choice(special_chars),
-    ]
-
-    all_chars = uppercase + lowercase + digits + special_chars
-
-    while len(password_chars) < length:
-        password_chars.append(secrets.choice(all_chars))
-
-    secrets.SystemRandom().shuffle(password_chars)
-
-    return "".join(password_chars)
-
-
-def hash_password(password: str) -> str:
-    return bcrypt.hashpw(
-        password.encode("utf-8"),
-        bcrypt.gensalt(),
-    ).decode("utf-8")
+def call_fn(name, payload):
+    resp = requests.post(f"{OPENFAAS_URL}/function/{name}", json=payload, timeout=10)
+    resp.raise_for_status()
+    return resp.json()
 
 
 def generate_qr_code(data: str, filename: str) -> str:
     output_path = OUTPUT_DIR / filename
-
-    qr = qrcode.QRCode(
-        version=1,
-        box_size=10,
-        border=4,
-    )
-
+    qr = qrcode.QRCode(version=1, box_size=10, border=4)
     qr.add_data(data)
     qr.make(fit=True)
-
-    image = qr.make_image(fill_color="black", back_color="white")
-    image.save(output_path)
-
+    qr.make_image(fill_color="black", back_color="white").save(output_path)
     return f"generated/{filename}"
-
-
-def create_or_update_user(username: str, password_hash: str) -> None:
-    connection = get_database_connection()
-
-    try:
-        with connection:
-            with connection.cursor() as cursor:
-                cursor.execute(
-                    """
-                    INSERT INTO users (username, password_hash)
-                    VALUES (%s, %s)
-                    ON CONFLICT (username)
-                    DO UPDATE SET
-                        password_hash = EXCLUDED.password_hash,
-                        gendate = CURRENT_TIMESTAMP,
-                        expired = FALSE;
-                    """,
-                    (username, password_hash),
-                )
-    finally:
-        connection.close()
-
-
-def user_exists(username: str) -> bool:
-    connection = get_database_connection()
-
-    try:
-        with connection:
-            with connection.cursor() as cursor:
-                cursor.execute(
-                    "SELECT id FROM users WHERE username = %s;",
-                    (username,),
-                )
-                return cursor.fetchone() is not None
-    finally:
-        connection.close()
-
-
-def save_2fa_secret(username: str, secret: str) -> None:
-    connection = get_database_connection()
-
-    try:
-        with connection:
-            with connection.cursor() as cursor:
-                cursor.execute(
-                    """
-                    UPDATE users
-                    SET mfa_secret = %s
-                    WHERE username = %s;
-                    """,
-                    (secret, username),
-                )
-    finally:
-        connection.close()
-
-
-def get_user(username: str):
-    connection = get_database_connection()
-
-    try:
-        with connection:
-            with connection.cursor() as cursor:
-                cursor.execute(
-                    """
-                    SELECT username, password_hash, mfa_secret, gendate, expired
-                    FROM users
-                    WHERE username = %s;
-                    """,
-                    (username,),
-                )
-                return cursor.fetchone()
-    finally:
-        connection.close()
-
-
-def mark_user_as_expired(username: str) -> None:
-    connection = get_database_connection()
-
-    try:
-        with connection:
-            with connection.cursor() as cursor:
-                cursor.execute(
-                    """
-                    UPDATE users
-                    SET expired = TRUE
-                    WHERE username = %s;
-                    """,
-                    (username,),
-                )
-    finally:
-        connection.close()
-
-
-def is_account_expired(gendate: datetime, expired: bool) -> bool:
-    if expired:
-        return True
-
-    expiration_date = gendate + timedelta(days=PASSWORD_VALIDITY_DAYS)
-    return datetime.now() > expiration_date
 
 
 @app.route("/")
@@ -253,20 +97,25 @@ def create_user():
         if not username:
             return render_template(
                 "create_user.html",
-                error="Le nom d’utilisateur est obligatoire.",
+                error="Le nom d'utilisateur est obligatoire.",
                 username=username,
                 full_name=full_name,
                 service=service,
             )
 
-        password = generate_secure_password()
-        password_hash = hash_password(password)
-        create_or_update_user(username, password_hash)
+        try:
+            data = call_fn("generate-password", {"username": username})
+        except Exception as e:
+            return render_template(
+                "create_user.html",
+                error=f"Erreur service : {e}",
+                username=username,
+                full_name=full_name,
+                service=service,
+            )
 
-        qr_image = generate_qr_code(
-            password,
-            f"{username}_password_qr.png",
-        )
+        password = data["password"]
+        qr_image = generate_qr_code(password, f"{username}_password_qr.png")
 
         return render_template(
             "create_user.html",
@@ -294,23 +143,26 @@ def first_connection():
 
         if action == "start":
             username = request.form.get("username", "").strip()
-
             if not username:
                 return render_template(
                     "first_connection.html",
                     step="username",
-                    error="Le nom d’utilisateur est obligatoire.",
+                    error="Le nom d'utilisateur est obligatoire.",
                     username=username,
                 )
 
-            password = generate_secure_password()
-            password_hash = hash_password(password)
-            create_or_update_user(username, password_hash)
+            try:
+                data = call_fn("generate-password", {"username": username})
+            except Exception as e:
+                return render_template(
+                    "first_connection.html",
+                    step="username",
+                    error=f"Erreur service : {e}",
+                    username=username,
+                )
 
-            password_qr = generate_qr_code(
-                password,
-                f"{username}_password_qr.png",
-            )
+            password = data["password"]
+            password_qr = generate_qr_code(password, f"{username}_password_qr.png")
 
             session["first_connection_step"] = "password"
             session["first_connection_username"] = username
@@ -337,14 +189,21 @@ def first_connection():
                 session.pop("first_connection_mfa_qr", None)
                 return redirect(url_for("first_connection"))
 
-            secret = pyotp.random_base32()
-            totp = pyotp.TOTP(secret)
-            totp_uri = totp.provisioning_uri(name=username, issuer_name="COFRAP")
-            mfa_qr = generate_qr_code(totp_uri, f"{username}_2fa_qr.png")
-            save_2fa_secret(username, secret)
+            try:
+                data = call_fn("generate-2fa", {"username": username})
+            except Exception as e:
+                return render_template(
+                    "first_connection.html",
+                    step="password",
+                    error=f"Erreur service : {e}",
+                    username=username,
+                    password=password,
+                    password_qr=session.get("first_connection_password_qr", ""),
+                )
 
+            mfa_qr = generate_qr_code(data["totp_uri"], f"{username}_2fa_qr.png")
             session["first_connection_step"] = "mfa"
-            session["first_connection_mfa_secret"] = secret
+            session["first_connection_mfa_secret"] = data["secret"]
             session["first_connection_mfa_qr"] = mfa_qr
 
             return render_template(
@@ -391,41 +250,41 @@ def first_connection():
 def activate_2fa():
     if request.method == "POST":
         username = request.form.get("username", "").strip()
-
         if not username:
             return render_template(
                 "activate_2fa.html",
-                error="Le nom d’utilisateur est obligatoire.",
+                error="Le nom d'utilisateur est obligatoire.",
                 username=username,
             )
 
-        if not user_exists(username):
+        try:
+            data = call_fn("generate-2fa", {"username": username})
+        except requests.HTTPError as e:
+            if e.response is not None and e.response.status_code == 404:
+                return render_template(
+                    "activate_2fa.html",
+                    error="Utilisateur introuvable. Créez d'abord le compte.",
+                    username=username,
+                )
             return render_template(
                 "activate_2fa.html",
-                error="Utilisateur introuvable. Créez d’abord le compte.",
+                error=f"Erreur service : {e}",
+                username=username,
+            )
+        except Exception as e:
+            return render_template(
+                "activate_2fa.html",
+                error=f"Erreur service : {e}",
                 username=username,
             )
 
-        secret = pyotp.random_base32()
-        totp = pyotp.TOTP(secret)
-
-        totp_uri = totp.provisioning_uri(
-            name=username,
-            issuer_name="COFRAP",
-        )
-
-        qr_image = generate_qr_code(
-            totp_uri,
-            f"{username}_2fa_qr.png",
-        )
-
-        save_2fa_secret(username, secret)
+        qr_image = generate_qr_code(data["totp_uri"], f"{username}_2fa_qr.png")
 
         return render_template(
             "activate_2fa.html",
             success=True,
             username=username,
-            secret=secret,
+            secret=data["secret"],
             qr_image=qr_image,
         )
 
@@ -451,110 +310,59 @@ def login():
                     username=username,
                 )
 
-            user = get_user(username)
+            try:
+                data = call_fn("authenticate-user", {"username": username, "password": password})
+            except requests.HTTPError as e:
+                resp_data = {}
+                if e.response is not None:
+                    try:
+                        resp_data = e.response.json()
+                    except Exception:
+                        pass
+                if resp_data.get("expired"):
+                    return render_template("login.html", error="Renouvellement requis : les identifiants ont expiré.", expired=True, username=username)
+                return render_template("login.html", error=resp_data.get("error", "Accès refusé."), username=username)
+            except Exception as e:
+                return render_template("login.html", error=f"Erreur service : {e}", username=username)
 
-            if user is None:
-                return render_template(
-                    "login.html",
-                    error="Accès refusé : identifiant inconnu.",
-                    username=username,
-                )
+            if data.get("step") == "otp_required":
+                session["pending_login_username"] = data["username"]
+                return render_template("login.html", username=data["username"], otp_pending=True)
 
-            db_username, password_hash, mfa_secret, gendate, expired = user
+            return render_template("login.html", error="Réponse inattendue du service.", username=username)
 
-            if is_account_expired(gendate, expired):
-                mark_user_as_expired(username)
-                return render_template(
-                    "login.html",
-                    error="Renouvellement requis : les identifiants ont expiré.",
-                    expired=True,
-                    username=username,
-                )
-
-            if not bcrypt.checkpw(password.encode("utf-8"), password_hash.encode("utf-8")):
-                return render_template(
-                    "login.html",
-                    error="Accès refusé : mot de passe incorrect.",
-                    username=username,
-                )
-
-            if not mfa_secret:
-                return render_template(
-                    "login.html",
-                    error="Authentification impossible : la double authentification n’est pas activée.",
-                    username=username,
-                )
-
-            session["pending_login_username"] = db_username
-
-            return render_template(
-                "login.html",
-                username=db_username,
-                otp_pending=True,
-            )
-
+        # OTP stage
         username = session.get("pending_login_username", "").strip()
-
         if not username:
-            return render_template(
-                "login.html",
-                error="La session de vérification a expiré. Reprenez la connexion depuis le début.",
-            )
+            return render_template("login.html", error="La session de vérification a expiré. Reprenez la connexion depuis le début.")
 
         otp_code = request.form.get("otp_code", "").strip()
-
         if not otp_code:
-            return render_template(
-                "login.html",
-                error="Le code de vérification est obligatoire.",
-                username=username,
-                otp_pending=True,
-            )
+            return render_template("login.html", error="Le code de vérification est obligatoire.", username=username, otp_pending=True)
 
-        user = get_user(username)
+        try:
+            data = call_fn("authenticate-user", {"username": username, "otp_code": otp_code})
+        except requests.HTTPError as e:
+            resp_data = {}
+            if e.response is not None:
+                try:
+                    resp_data = e.response.json()
+                except Exception:
+                    pass
+            if resp_data.get("expired"):
+                session.pop("pending_login_username", None)
+                return render_template("login.html", error="Renouvellement requis : les identifiants ont expiré.", expired=True, username=username)
+            return render_template("login.html", error=resp_data.get("error", "Code incorrect."), username=username, otp_pending=True)
+        except Exception as e:
+            return render_template("login.html", error=f"Erreur service : {e}", username=username, otp_pending=True)
 
-        if user is None:
+        if data.get("step") == "authenticated":
             session.pop("pending_login_username", None)
-            return render_template(
-                "login.html",
-                error="Authentification refusée : compte introuvable.",
-            )
+            return redirect(url_for("dashboard", username=username))
 
-        _, _, mfa_secret, gendate, expired = user
-
-        if is_account_expired(gendate, expired):
-            session.pop("pending_login_username", None)
-            mark_user_as_expired(username)
-            return render_template(
-                "login.html",
-                error="Renouvellement requis : les identifiants ont expiré.",
-                expired=True,
-                username=username,
-            )
-
-        if not mfa_secret:
-            session.pop("pending_login_username", None)
-            return render_template(
-                "login.html",
-                error="Authentification impossible : la double authentification n’est pas activée.",
-            )
-
-        totp = pyotp.TOTP(mfa_secret)
-
-        if not totp.verify(otp_code):
-            return render_template(
-                "login.html",
-                error="Accès refusé : le code de vérification n’est pas valide.",
-                username=username,
-                otp_pending=True,
-            )
-
-        session.pop("pending_login_username", None)
-
-        return redirect(url_for("dashboard", username=username))
+        return render_template("login.html", error="Réponse inattendue du service.", username=username, otp_pending=True)
 
     pending_username = session.get("pending_login_username", "").strip()
-
     return render_template(
         "login.html",
         username=request.args.get("username", "").strip() or pending_username,
@@ -565,7 +373,6 @@ def login():
 @app.route("/dashboard")
 def dashboard():
     username = request.args.get("username", "").strip()
-
     return render_template(
         "dashboard.html",
         username=username,
