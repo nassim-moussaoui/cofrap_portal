@@ -17,6 +17,7 @@ spec:
         - name: flask
           # Remplace par ton image Docker Hub : ton-username/cofrap-flask:latest
           image: yassineadn/cofrap-flask:latest
+          imagePullPolicy: Never
           ports:
             - containerPort: 5000
           env:

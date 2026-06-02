@@ -1,100 +1,121 @@
 {% extends "base.html" %} {% block content %}
-<section class="login-shell">
-  <div class="login-card login-card-modern">
+<div class="login-wrap">
+  <div class="login-card glass anim-1">
+
+    <!-- Brand -->
+    <div class="login-brand">
+      <span class="login-brand-name">COFRAP</span>
+    </div>
+
     {% if otp_pending %}
-    <div class="auth-kicker">Double authentification</div>
-    <h1>Vérification MFA</h1>
-    <p class="auth-subtitle">
-      Entre le code temporaire généré par ton application.
-    </p>
+    <!-- ── OTP stage ─────────────────────────────────────── -->
+    <div class="login-head anim-2">
+      <span class="cfp-tag">Double authentification</span>
+      <h1 class="login-h1">Vérification MFA</h1>
+      <p class="login-sub">Entre le code temporaire généré par ton application d'authentification.</p>
+    </div>
+
     {% if error %}
-    <div class="login-error">{{ error }}</div>
+    <div class="cfp-error anim-2">
+      <i data-lucide="alert-circle" style="width:15px;height:15px;flex-shrink:0;"></i>
+      {{ error }}
+    </div>
     {% endif %}
-    <form method="POST" class="login-form otp-form" id="otp-form">
+
+    <form method="POST" class="login-form anim-3" id="otp-form">
       <input type="hidden" name="stage" value="otp" />
-      <label>Code à 6 chiffres</label>
-      <div class="otp-inputs" id="otp-inputs">
-        <input type="text" maxlength="1" inputmode="numeric" />
-        <input type="text" maxlength="1" inputmode="numeric" />
-        <input type="text" maxlength="1" inputmode="numeric" />
-        <input type="text" maxlength="1" inputmode="numeric" />
-        <input type="text" maxlength="1" inputmode="numeric" />
-        <input type="text" maxlength="1" inputmode="numeric" />
+      <div class="otp-wrap">
+        <span class="otp-label">Code à 6 chiffres</span>
+        <div class="otp-row" id="otp-inputs">
+          <input class="otp-digit" type="text" maxlength="1" inputmode="numeric" autocomplete="one-time-code" />
+          <input class="otp-digit" type="text" maxlength="1" inputmode="numeric" />
+          <input class="otp-digit" type="text" maxlength="1" inputmode="numeric" />
+          <input class="otp-digit" type="text" maxlength="1" inputmode="numeric" />
+          <input class="otp-digit" type="text" maxlength="1" inputmode="numeric" />
+          <input class="otp-digit" type="text" maxlength="1" inputmode="numeric" />
+        </div>
+        <input type="hidden" id="otp_code" name="otp_code" value="" />
       </div>
-      <input type="hidden" id="otp_code" name="otp_code" value="" />
-      <button class="btn primary btn-wide btn-xl" type="submit">
-        Vérifier
+      <button class="cfp-btn cfp-btn-primary cfp-btn-wide" type="submit">
+        <i data-lucide="check-circle" style="width:15px;height:15px;"></i>
+        Vérifier le code
       </button>
     </form>
+
     {% else %}
-    <div class="auth-kicker">Connexion</div>
-    <h1>Accès au portail</h1>
-    <p class="auth-subtitle">
-      Connecte-toi avec ton identifiant COFRAP et ton mot de passe.
-    </p>
+    <!-- ── Credentials stage ──────────────────────────────── -->
+    <div class="login-head anim-2">
+      <span class="cfp-tag">Connexion</span>
+      <h1 class="login-h1">Accès au portail</h1>
+      <p class="login-sub">Connecte-toi avec ton identifiant COFRAP et ton mot de passe.</p>
+    </div>
+
     {% if error %}
-    <div class="login-error">{{ error }}</div>
+    <div class="cfp-error anim-2">
+      <i data-lucide="alert-circle" style="width:15px;height:15px;flex-shrink:0;"></i>
+      {{ error }}
+    </div>
     {% endif %}
-    <form method="POST" class="login-form">
+
+    <form method="POST" class="login-form anim-3">
       <input type="hidden" name="stage" value="credentials" />
-      <label for="username">Nom d'utilisateur</label>
-      <input
-        type="text"
-        id="username"
-        name="username"
-        value="{{ username|default('') }}"
-        placeholder="Nom d'utilisateur"
-        required
-      />
-      <label for="password">Mot de passe</label>
-      <input
-        type="password"
-        id="password"
-        name="password"
-        placeholder="••••••••"
-        required
-      />
-      <button class="btn primary btn-wide btn-xl" type="submit">
+      <div class="cfp-field">
+        <label class="cfp-label" for="username">Nom d'utilisateur</label>
+        <input class="cfp-input" type="text" id="username" name="username"
+               value="{{ username|default('') }}" placeholder="Nom d'utilisateur" required />
+      </div>
+      <div class="cfp-field">
+        <label class="cfp-label" for="password">Mot de passe</label>
+        <input class="cfp-input" type="password" id="password" name="password"
+               placeholder="••••••••" required />
+      </div>
+      <button class="cfp-btn cfp-btn-primary cfp-btn-wide" type="submit">
+        <i data-lucide="arrow-right" style="width:15px;height:15px;"></i>
         Continuer
       </button>
     </form>
-    <a
-      class="btn secondary btn-wide btn-xl"
-      href="{{ url_for('first_connection') }}"
-    >
-      Première connexion
-    </a>
+
+    <div class="cfp-divider anim-4"></div>
+
+    <div class="login-footer anim-5">
+      <a href="{{ url_for('first_connection') }}" class="cfp-btn cfp-btn-secondary cfp-btn-wide">
+        <i data-lucide="user-plus" style="width:15px;height:15px;"></i>
+        Première connexion
+      </a>
+      <span class="login-link">Accès réservé aux collaborateurs autorisés</span>
+    </div>
+
     {% endif %}
   </div>
-</section>
+</div>
 
 <script>
   (function () {
-    const form = document.getElementById("otp-form");
+    const form   = document.getElementById("otp-form");
     if (!form) return;
-    const inputs = Array.from(document.querySelectorAll("#otp-inputs input"));
+    const inputs = Array.from(document.querySelectorAll("#otp-inputs .otp-digit"));
     const hidden = document.getElementById("otp_code");
 
-    const sync = () => {
-      hidden.value = inputs.map((input) => input.value).join("");
-    };
+    const sync = () => { hidden.value = inputs.map(i => i.value).join(""); };
 
-    inputs.forEach((input, index) => {
-      input.addEventListener("input", (event) => {
-        event.target.value = event.target.value.replace(/\D/g, "").slice(0, 1);
+    inputs.forEach((input, idx) => {
+      input.addEventListener("input", e => {
+        e.target.value = e.target.value.replace(/\D/g, "").slice(0, 1);
+        if (e.target.value) e.target.classList.add("filled");
+        else e.target.classList.remove("filled");
         sync();
-        if (event.target.value && index < inputs.length - 1) {
-          inputs[index + 1].focus();
-        }
+        if (e.target.value && idx < inputs.length - 1) inputs[idx + 1].focus();
       });
-      input.addEventListener("keydown", (event) => {
-        if (event.key === "Backspace" && !input.value && index > 0) {
-          inputs[index - 1].focus();
+      input.addEventListener("keydown", e => {
+        if (e.key === "Backspace" && !input.value && idx > 0) {
+          inputs[idx - 1].focus();
+          inputs[idx - 1].classList.remove("filled");
         }
       });
     });
 
     form.addEventListener("submit", sync);
+    if (inputs[0]) inputs[0].focus();
   })();
 </script>
 {% endblock %}

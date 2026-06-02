@@ -1,142 +1,231 @@
 {% extends "base.html" %} {% block content %}
-<section class="dash-page">
-  <header class="dash-topbar">
-    <div class="dash-brand">
-      <img
-        src="{{ url_for('static', filename='img/cofrap-logo.png') }}"
-        alt="COFRAP"
-        class="dash-logo"
-      />
-      <div>
-        <span>COFRAP</span>
-        <strong>Tableau de bord interne</strong>
-      </div>
-    </div>
+<div class="dash-shell">
 
+  <!-- ── Top bar ─────────────────────────────────────────────── -->
+  <header class="dash-top">
+    <div class="dash-brand">
+      <span class="dash-brand-name">COFRAP</span>
+      <span class="dash-brand-sep">/</span>
+      <span class="dash-brand-sub">tableau de bord</span>
+    </div>
     <div class="dash-user">
-      <div>
+      <div class="dash-user-info">
         <small>Connecté en tant que</small>
-        <strong
-          >{% if username %}{{ username }}{% else %}P. Durand{% endif %}</strong
-        >
+        <strong>{% if username %}{{ username }}{% else %}P. Durand{% endif %}</strong>
       </div>
-      <button class="dash-logout">Déconnexion</button>
+      <button class="cfp-btn cfp-btn-ghost cfp-btn-sm" style="display:flex;align-items:center;gap:6px;">
+        <i data-lucide="log-out" style="width:14px;height:14px;"></i>
+        Déconnexion
+      </button>
     </div>
   </header>
 
-  <div class="dash-shell">
-    <aside class="dash-sidebar">
-      <div class="dash-nav-group">
-        <span class="dash-nav-label">Navigation</span>
-        <a class="active" href="#">Aperçu</a>
-        <a href="#">Applications</a>
-        <a href="#">Ressources</a>
-        <a href="#">Demandes</a>
-        <a href="#">Profil</a>
-      </div>
+  <!-- ── Body ────────────────────────────────────────────────── -->
+  <div class="dash-body">
 
-      <div class="dash-status-card">
-        <span>Etat du portail</span>
-        <strong>Opérationnel</strong>
-        <p>Accès sécurisé et journalisation active.</p>
+    <!-- Sidebar -->
+    <aside class="dash-sidebar">
+      <span class="dash-nav-label">Navigation</span>
+
+      <nav style="display:flex;flex-direction:column;gap:2px;">
+        <a href="#" class="dash-nav-item active">
+          <i data-lucide="layout-dashboard"></i>
+          Aperçu
+        </a>
+        <a href="#" class="dash-nav-item">
+          <i data-lucide="grid-3x3"></i>
+          Applications
+        </a>
+        <a href="#" class="dash-nav-item">
+          <i data-lucide="book-open"></i>
+          Ressources
+        </a>
+        <a href="#" class="dash-nav-item">
+          <i data-lucide="inbox"></i>
+          Demandes
+        </a>
+        <a href="#" class="dash-nav-item">
+          <i data-lucide="user"></i>
+          Profil
+        </a>
+      </nav>
+
+      <div style="flex:1;"></div>
+
+      <!-- Status box -->
+      <div class="dash-status-box">
+        <div class="dash-status-box-label">État du portail</div>
+        <div class="dash-status-box-val">
+          <span class="cfp-dot cfp-dot-green"></span>
+          Opérationnel
+        </div>
+        <div class="dash-status-box-desc">Accès sécurisé et journalisation active.</div>
       </div>
     </aside>
 
+    <!-- Main content -->
     <section class="dash-content">
-      <div class="dash-hero-card">
+
+      <!-- Hero card -->
+      <article class="dash-hero-card glass anim-1">
         <div>
-          <span class="hero-kicker">Vue globale</span>
-          <h1>Supervision des services internes</h1>
-          <p>
-            Un espace fictif de pilotage avec données synthétiques, pensé pour
-            une présentation moderne et crédible.
+          <div class="dash-hero-eyebrow">Vue globale</div>
+          <h1 class="dash-hero-h1">Supervision des services internes</h1>
+          <p class="dash-hero-desc">
+            Un espace fictif de pilotage avec données synthétiques, pensé pour une présentation moderne et crédible.
           </p>
         </div>
-        <div class="dash-hero-pill">Authentification MFA active</div>
+        <span class="cfp-badge cfp-badge-cyan" style="flex-shrink:0;margin-top:4px;">
+          <i data-lucide="shield" style="width:11px;height:11px;"></i>
+          Authentification MFA active
+        </span>
+      </article>
+
+      <!-- Metric cards -->
+      <div class="dash-metrics-grid anim-2">
+        <div class="dash-metric">
+          <div class="dash-metric-label">
+            <i data-lucide="users"></i>
+            Sessions actives
+          </div>
+          <div class="dash-metric-value">128</div>
+          <div class="dash-metric-change">+12 cette heure</div>
+        </div>
+        <div class="dash-metric">
+          <div class="dash-metric-label">
+            <i data-lucide="timer"></i>
+            Temps de réponse
+          </div>
+          <div class="dash-metric-value">118<span style="font-size:1rem;color:var(--muted);margin-left:2px;">ms</span></div>
+          <div class="dash-metric-change">−4ms vs hier</div>
+        </div>
+        <div class="dash-metric">
+          <div class="dash-metric-label">
+            <i data-lucide="alert-triangle"></i>
+            Incidents ouverts
+          </div>
+          <div class="dash-metric-value" style="color:var(--amber);">4</div>
+          <div class="dash-metric-change" style="color:var(--amber);">2 critiques</div>
+        </div>
+        <div class="dash-metric">
+          <div class="dash-metric-label">
+            <i data-lucide="activity"></i>
+            Disponibilité
+          </div>
+          <div class="dash-metric-value" style="color:var(--green);">99.98<span style="font-size:1rem;color:var(--muted);">%</span></div>
+          <div class="dash-metric-change">30 derniers jours</div>
+        </div>
       </div>
 
-      <section class="dash-metrics">
-        <article>
-          <span>Sessions actives</span>
-          <strong>128</strong>
-        </article>
-        <article>
-          <span>Temps de réponse</span>
-          <strong>118 ms</strong>
-        </article>
-        <article>
-          <span>Incidents ouverts</span>
-          <strong>4</strong>
-        </article>
-        <article>
-          <span>Disponibilité</span>
-          <strong>99.98%</strong>
-        </article>
-      </section>
+      <!-- Chart + Apps grid -->
+      <div class="dash-main-grid anim-3">
 
-      <section class="dash-grid-modern">
-        <article class="dash-card chart-card">
-          <div class="card-head">
-            <h2>Performance applicative</h2>
-            <span>30 jours</span>
+        <!-- Performance chart -->
+        <article class="dash-card">
+          <div class="dash-card-head">
+            <span class="dash-card-title">Performance applicative</span>
+            <span class="dash-card-meta">30 jours</span>
           </div>
           <div class="chart-area">
-            <div class="chart-line line-blue"></div>
-            <div class="chart-line line-green"></div>
-            <div class="chart-line line-orange"></div>
+            <div class="chart-bar" style="height:60%;"></div>
+            <div class="chart-bar" style="height:75%;"></div>
+            <div class="chart-bar" style="height:42%;"></div>
+            <div class="chart-bar" style="height:85%;"></div>
+            <div class="chart-bar" style="height:58%;"></div>
+            <div class="chart-bar" style="height:72%;"></div>
+            <div class="chart-bar" style="height:90%;"></div>
+            <div class="chart-bar" style="height:48%;"></div>
+            <div class="chart-bar" style="height:65%;"></div>
+            <div class="chart-bar" style="height:95%;"></div>
+            <div class="chart-bar" style="height:52%;"></div>
+            <div class="chart-bar" style="height:78%;"></div>
+            <div class="chart-bar" style="height:44%;"></div>
+            <div class="chart-bar" style="height:82%;"></div>
           </div>
-          <div class="chart-metrics">
-            <div><span>Réponse moyenne</span><strong>120 ms</strong></div>
-            <div><span>Volume API</span><strong>250k</strong></div>
-            <div><span>Taux d’erreurs</span><strong>0.1%</strong></div>
-          </div>
-        </article>
-
-        <article class="dash-card apps-card">
-          <div class="card-head">
-            <h2>Applications prioritaires</h2>
-            <span>Disponibles maintenant</span>
-          </div>
-          <div class="app-list modern-list">
-            <div class="app-row">
-              <div>
-                <strong>Application A</strong>
-                <span>ERP commercial - v2.1</span>
-              </div>
-              <button>Lancer</button>
+          <div class="chart-stats">
+            <div class="chart-stat">
+              <span class="chart-stat-label">Réponse moyenne</span>
+              <span class="chart-stat-val">120 ms</span>
             </div>
-            <div class="app-row">
-              <div>
-                <strong>Portail RH</strong>
-                <span>Accès collaborateurs - v1.0</span>
-              </div>
-              <button>Lancer</button>
+            <div class="chart-stat">
+              <span class="chart-stat-label">Volume API</span>
+              <span class="chart-stat-val">250k</span>
             </div>
-            <div class="app-row">
-              <div>
-                <strong>Support client</strong>
-                <span>Tickets et demandes - v3.4</span>
-              </div>
-              <button>Lancer</button>
+            <div class="chart-stat">
+              <span class="chart-stat-label">Taux d'erreurs</span>
+              <span class="chart-stat-val">0.1%</span>
             </div>
           </div>
         </article>
-      </section>
 
-      <section class="dash-bottom-grid">
-        <article class="dash-card notif-card">
-          <div class="card-head">
-            <h2>Notifications</h2>
-            <span>Temps réel</span>
+        <!-- Apps list -->
+        <article class="dash-card">
+          <div class="dash-card-head">
+            <span class="dash-card-title">Applications prioritaires</span>
+            <span class="dash-card-meta">Disponibles</span>
           </div>
-          <div class="notif-item">1 nouvelle demande de validation</div>
-          <div class="notif-item">Maintenance système vendredi à 14h</div>
-          <div class="notif-item">3 comptes à renouveler cette semaine</div>
+          <div class="app-list">
+            <div class="app-row">
+              <div class="app-row-info">
+                <div class="app-row-name">Application A</div>
+                <div class="app-row-meta">ERP commercial · v2.1</div>
+              </div>
+              <button class="cfp-btn cfp-btn-secondary cfp-btn-sm">Lancer</button>
+            </div>
+            <div class="app-row">
+              <div class="app-row-info">
+                <div class="app-row-name">Portail RH</div>
+                <div class="app-row-meta">Accès collaborateurs · v1.0</div>
+              </div>
+              <button class="cfp-btn cfp-btn-secondary cfp-btn-sm">Lancer</button>
+            </div>
+            <div class="app-row">
+              <div class="app-row-info">
+                <div class="app-row-name">Support client</div>
+                <div class="app-row-meta">Tickets et demandes · v3.4</div>
+              </div>
+              <button class="cfp-btn cfp-btn-secondary cfp-btn-sm">Lancer</button>
+            </div>
+          </div>
+        </article>
+      </div>
+
+      <!-- Bottom grid: notifs + watermark -->
+      <div class="dash-bottom-grid anim-4">
+
+        <article class="dash-card">
+          <div class="dash-card-head">
+            <span class="dash-card-title">Notifications</span>
+            <span class="cfp-dot cfp-dot-cyan"></span>
+          </div>
+          <div class="notif-list">
+            <div class="notif-row">
+              <span class="notif-dot"></span>
+              1 nouvelle demande de validation
+            </div>
+            <div class="notif-row">
+              <span class="notif-dot"></span>
+              Maintenance système vendredi à 14h
+            </div>
+            <div class="notif-row">
+              <span class="notif-dot"></span>
+              3 comptes à renouveler cette semaine
+            </div>
+          </div>
         </article>
 
-        <article class="dash-card logo-watermark"></article>
-      </section>
+        <article class="dash-card dash-watermark">
+          <span class="dash-watermark-text">COFRAP</span>
+          <div class="dash-watermark-badge">
+            <span class="cfp-badge cfp-badge-green">
+              <span class="cfp-dot cfp-dot-green" style="width:5px;height:5px;"></span>
+              En ligne
+            </span>
+          </div>
+        </article>
+
+      </div>
     </section>
   </div>
-</section>
+</div>
 {% endblock %}

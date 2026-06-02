@@ -1,150 +1,159 @@
 {% extends "base.html" %} {% block content %}
-<section class="split-layout">
-  <div class="panel-card">
-    <p class="eyebrow">Étape 1 · Enrôlement d’un collaborateur</p>
-    <h1>Création d’un accès sécurisé initial</h1>
-    <p class="lead">
-      Cette étape génère un identifiant sécurisé initial pour permettre au
-      collaborateur d’activer son accès.
-    </p>
+<div class="split-wrap">
 
-    {% if error %}
-    <div class="message error">{{ error }}</div>
-    {% endif %}
-
-    <form method="POST" class="form-grid">
-      <div class="field-group">
-        <label for="username">Nom d’utilisateur</label>
-        <input
-          type="text"
-          id="username"
-          name="username"
-          value="{{ username|default('') }}"
-          placeholder="ex : cduval"
-          required
-        />
-      </div>
-
-      <div class="field-group">
-        <label for="full_name"
-          >Nom complet fictif <span class="field-note">optionnel</span></label
-        >
-        <input
-          type="text"
-          id="full_name"
-          name="full_name"
-          value="{{ full_name|default('') }}"
-          placeholder="ex : Camille Duval"
-        />
-      </div>
-
-      <div class="field-group">
-        <label for="service"
-          >Service / entité <span class="field-note">optionnel</span></label
-        >
-        <input
-          type="text"
-          id="service"
-          name="service"
-          value="{{ service|default('') }}"
-          placeholder="ex : Direction métier cloud"
-        />
-      </div>
-
-      <button class="btn primary btn-wide" type="submit">
-        Générer l’accès initial
-      </button>
-    </form>
-
-    <p class="fine-print">
-      Le mot de passe généré est affiché une seule fois, puis conservé sous
-      forme hachée.
-    </p>
-  </div>
-
-  <aside class="panel-card side-panel">
-    <div class="section-heading">
-      <p class="eyebrow">Ce que fait le portail</p>
-      <h2>Cadre de sécurité</h2>
-    </div>
-
-    <div class="info-list">
-      <div class="info-item">
-        <strong>Génération d’un secret fort</strong>
-        <span
-          >Mot de passe de 24 caractères compatible avec une politique d’accès
-          interne.</span
-        >
-      </div>
-      <div class="info-item">
-        <strong>Stockage sécurisé</strong>
-        <span
-          >Le mot de passe n’est jamais conservé en clair, seule sa version
-          hachée est enregistrée.</span
-        >
-      </div>
-      <div class="info-item">
-        <strong>Transition MFA</strong>
-        <span
-          >Une fois le compte créé, le parcours bascule vers l’activation de la
-          double authentification.</span
-        >
-      </div>
-    </div>
-  </aside>
-</section>
-
-{% if success %}
-<section class="section-block">
-  <div class="confirmation-card panel-card">
-    <div class="confirmation-header">
+  <!-- Top nav -->
+  <nav class="split-nav anim-1">
+    <div class="home-brand">
       <div>
-        <p class="eyebrow">Accès initial généré</p>
-        <h2>Collaborateur enrôlé avec succès</h2>
-      </div>
-      <span class="badge badge-success">Compte créé</span>
-    </div>
-
-    <div class="metadata-row">
-      <span class="badge badge-neutral">Identifiant : {{ username }}</span>
-      {% if full_name %}<span class="badge badge-neutral">{{ full_name }}</span
-      >{% endif %} {% if service %}<span class="badge badge-neutral"
-        >{{ service }}</span
-      >{% endif %}
-    </div>
-
-    <div class="credential-grid">
-      <div class="credential-card">
-        <p class="card-label">Mot de passe initial</p>
-        <code class="credential-value">{{ password }}</code>
-        <p class="fine-print">
-          Ce mot de passe n’est affiché qu’au moment de l’enrôlement.
-        </p>
-      </div>
-
-      <div class="credential-card qr-card">
-        <p class="card-label">QR Code du mot de passe</p>
-        <img
-          src="{{ url_for('static', filename=qr_image) }}"
-          alt="QR Code mot de passe"
-          class="qr-image"
-        />
-        <p class="fine-print">
-          Transmission ponctuelle de l’accès initial lors de l’enrôlement.
-        </p>
+        <div class="home-brand-name">COFRAP</div>
+        <div class="home-brand-sub">Portail interne</div>
       </div>
     </div>
+    <span class="cfp-badge cfp-badge-neutral">
+      <i data-lucide="user-plus" style="width:11px;height:11px;"></i>
+      Étape 1 — Enrôlement
+    </span>
+  </nav>
 
-    <div class="actions-row">
-      <a
-        class="btn primary"
-        href="{{ url_for('activate_2fa', username=username) }}"
-        >Continuer vers l’activation 2FA</a
-      >
-      <a class="btn secondary" href="{{ url_for('login', username=username) }}"
-        >Tester la connexion sécurisée</a
-      >
+  <!-- Split layout -->
+  <div class="split-main anim-2">
+
+    <!-- Form panel -->
+    <div class="split-panel glass">
+      <div>
+        <span class="split-eyebrow">Étape 1 · Enrôlement d'un collaborateur</span>
+        <h1 class="split-h1" style="margin-top:8px;">Création d'un accès sécurisé initial</h1>
+      </div>
+      <p class="split-lead">
+        Cette étape génère un identifiant sécurisé initial pour permettre au collaborateur d'activer son accès.
+      </p>
+
+      {% if error %}
+      <div class="cfp-error">
+        <i data-lucide="alert-circle" style="width:15px;height:15px;flex-shrink:0;"></i>
+        {{ error }}
+      </div>
+      {% endif %}
+
+      <form method="POST" class="split-form">
+        <div class="cfp-field">
+          <label class="cfp-label" for="username">Nom d'utilisateur</label>
+          <input class="cfp-input" type="text" id="username" name="username"
+                 value="{{ username|default('') }}" placeholder="ex : cduval" required />
+        </div>
+        <div class="cfp-field">
+          <label class="cfp-label" for="full_name">
+            Nom complet fictif
+            <span class="field-note">optionnel</span>
+          </label>
+          <input class="cfp-input" type="text" id="full_name" name="full_name"
+                 value="{{ full_name|default('') }}" placeholder="ex : Camille Duval" />
+        </div>
+        <div class="cfp-field">
+          <label class="cfp-label" for="service">
+            Service / entité
+            <span class="field-note">optionnel</span>
+          </label>
+          <input class="cfp-input" type="text" id="service" name="service"
+                 value="{{ service|default('') }}" placeholder="ex : Direction métier cloud" />
+        </div>
+        <button class="cfp-btn cfp-btn-primary cfp-btn-wide" type="submit">
+          <i data-lucide="key-round" style="width:15px;height:15px;"></i>
+          Générer l'accès initial
+        </button>
+      </form>
+
+      <p class="split-fine">
+        Le mot de passe généré est affiché une seule fois, puis conservé sous forme hachée.
+      </p>
+    </div>
+
+    <!-- Info panel -->
+    <aside class="info-panel glass-sm">
+      <div>
+        <div class="info-panel-eyebrow">Ce que fait le portail</div>
+        <h2 class="info-panel-h2">Cadre de sécurité</h2>
+      </div>
+      <div class="info-items">
+        <div class="info-item">
+          <div class="info-item-title">
+            <i data-lucide="shield" style="width:13px;height:13px;display:inline;vertical-align:middle;margin-right:6px;color:var(--cyan);"></i>
+            Génération d'un secret fort
+          </div>
+          <div class="info-item-desc">Mot de passe de 24 caractères compatible avec une politique d'accès interne.</div>
+        </div>
+        <div class="info-item">
+          <div class="info-item-title">
+            <i data-lucide="database" style="width:13px;height:13px;display:inline;vertical-align:middle;margin-right:6px;color:var(--cyan);"></i>
+            Stockage sécurisé
+          </div>
+          <div class="info-item-desc">Le mot de passe n'est jamais conservé en clair, seule sa version hachée est enregistrée.</div>
+        </div>
+        <div class="info-item">
+          <div class="info-item-title">
+            <i data-lucide="smartphone" style="width:13px;height:13px;display:inline;vertical-align:middle;margin-right:6px;color:var(--cyan);"></i>
+            Transition MFA
+          </div>
+          <div class="info-item-desc">Une fois le compte créé, le parcours bascule vers l'activation de la double authentification.</div>
+        </div>
+      </div>
+    </aside>
+  </div>
+
+  {% if success %}
+  <!-- Confirmation card -->
+  <div class="confirm-wrap anim-3">
+    <div class="confirm-card glass">
+      <div class="confirm-head">
+        <div>
+          <div class="confirm-eyebrow">Accès initial généré</div>
+          <h2 class="confirm-h2">Collaborateur enrôlé avec succès</h2>
+        </div>
+        <span class="cfp-badge cfp-badge-green">
+          <i data-lucide="check-circle" style="width:11px;height:11px;"></i>
+          Compte créé
+        </span>
+      </div>
+
+      <div class="meta-tags">
+        <span class="cfp-badge cfp-badge-neutral">
+          <i data-lucide="user" style="width:11px;height:11px;"></i>
+          {{ username }}
+        </span>
+        {% if full_name %}
+        <span class="cfp-badge cfp-badge-neutral">{{ full_name }}</span>
+        {% endif %}
+        {% if service %}
+        <span class="cfp-badge cfp-badge-neutral">{{ service }}</span>
+        {% endif %}
+      </div>
+
+      <div class="cred-grid">
+        <div class="cred-card">
+          <div class="cred-card-label">Mot de passe initial</div>
+          <code class="cfp-mono">{{ password }}</code>
+          <p class="cred-fine">Ce mot de passe n'est affiché qu'au moment de l'enrôlement.</p>
+        </div>
+        <div class="cred-card">
+          <div class="cred-card-label">QR Code du mot de passe</div>
+          <img src="{{ url_for('static', filename=qr_image) }}" alt="QR Code mot de passe" class="qr-image" />
+          <p class="cred-fine">Transmission ponctuelle de l'accès initial lors de l'enrôlement.</p>
+        </div>
+      </div>
+
+      <div class="actions-row">
+        <a class="cfp-btn cfp-btn-primary" href="{{ url_for('activate_2fa', username=username) }}">
+          <i data-lucide="smartphone" style="width:15px;height:15px;"></i>
+          Continuer vers l'activation 2FA
+        </a>
+        <a class="cfp-btn cfp-btn-secondary" href="{{ url_for('login', username=username) }}">
+          <i data-lucide="log-in" style="width:15px;height:15px;"></i>
+          Tester la connexion sécurisée
+        </a>
+      </div>
     </div>
   </div>
-</section>
-{% endif %} {% endblock %}
+  {% endif %}
+
+</div>
+{% endblock %}

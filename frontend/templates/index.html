@@ -1,61 +1,78 @@
 {% extends "base.html" %} {% block content %}
-<section class="home-screen">
-  <header class="hero-brand">
-    <img
-      src="{{ url_for('static', filename='img/cofrap-logo.png') }}"
-      alt="COFRAP"
-      class="hero-logo"
-    />
-    <div class="hero-brand-copy">
-      <span>Portail interne</span>
-      <strong>COFRAP</strong>
-    </div>
-  </header>
+<div class="home-wrap anim-1">
 
-  <div class="hero-layout">
-    <div class="hero-copy">
-      <p class="eyebrow">Accès collaborateurs</p>
-      <h1>Un portail interne propre, rapide et crédible.</h1>
-      <p class="hero-text">
-        Une interface sobre pour présenter l’accès sécurisé COFRAP, avec
-        authentification forte et tableau de bord fictif de type back-office.
-      </p>
-
-      <div class="hero-actions">
-        <a class="btn primary btn-lg" href="{{ url_for('login') }}"
-          >Connexion</a
-        >
-        <div class="status-pill">Système en service</div>
-      </div>
-
-      <div class="hero-metrics">
-        <article>
-          <strong>24/7</strong>
-          <span>Disponibilité portail</span>
-        </article>
-        <article>
-          <strong>2 étapes</strong>
-          <span>Mot de passe + MFA</span>
-        </article>
-        <article>
-          <strong>180 j</strong>
-          <span>Renouvellement des identifiants</span>
-        </article>
+  <!-- Nav -->
+  <nav class="home-nav">
+    <div class="home-brand">
+      <div>
+        <div class="home-brand-name">COFRAP</div>
+        <div class="home-brand-sub">Portail interne</div>
       </div>
     </div>
+    <a href="{{ url_for('login') }}" class="cfp-btn cfp-btn-secondary cfp-btn-sm">
+      <i data-lucide="log-in" style="width:14px;height:14px;"></i>
+      Connexion
+    </a>
+  </nav>
 
-    <aside class="hero-card">
-      <div class="hero-card-badge">Espace sécurisé</div>
-      <h2>Accès interne COFRAP</h2>
-      <p>
-        Connexion réservée aux collaborateurs autorisés avec une seconde
-        vérification à usage temporaire.
-      </p>
-      <div class="hero-card-panel">
-        <span>Flux actif</span>
-        <strong>Authentification protégée</strong>
+  <!-- Hero -->
+  <section class="home-hero">
+
+    <div class="home-eyebrow anim-1">
+      <div class="home-eyebrow-line home-eyebrow-line-l"></div>
+      Accès collaborateurs
+      <div class="home-eyebrow-line home-eyebrow-line-r"></div>
+    </div>
+
+    <h1 class="home-h1 anim-2">
+      Un portail interne<br>
+      <span class="home-h1-accent">propre, rapide</span><br>
+      et crédible.
+    </h1>
+
+    <p class="home-lead anim-3">
+      Une interface sobre pour accéder au système COFRAP avec authentification forte et tableau de bord de type back-office.
+    </p>
+
+    <div class="home-cta anim-4">
+      <a href="{{ url_for('login') }}" class="cfp-btn cfp-btn-primary cfp-btn-lg">
+        <i data-lucide="shield-check" style="width:16px;height:16px;"></i>
+        Connexion sécurisée
+      </a>
+      <div class="status-pill">
+        <span class="cfp-dot cfp-dot-green"></span>
+        Système en service
       </div>
-    </aside>
-  </div>
-</section>
+    </div>
+
+    <!-- Metrics -->
+    <div class="home-metrics anim-5">
+      <div class="home-metric">
+        <span class="home-metric-value">24/7</span>
+        <span class="home-metric-label">Disponibilité<br>portail</span>
+      </div>
+      <div class="home-metric">
+        <span class="home-metric-value">2</span>
+        <span class="home-metric-label">Facteurs<br>d'authentification</span>
+      </div>
+      <div class="home-metric">
+        <span class="home-metric-value">180j</span>
+        <span class="home-metric-label">Renouvellement<br>identifiants</span>
+      </div>
+    </div>
+
+    <!-- Info card -->
+    <div class="home-info-card glass anim-6">
+      <div class="home-info-text">
+        <strong>Espace sécurisé COFRAP</strong>
+        <span>Connexion réservée aux collaborateurs autorisés avec vérification temporaire à deux étapes.</span>
+      </div>
+      <span class="cfp-badge cfp-badge-cyan">
+        <i data-lucide="lock" style="width:11px;height:11px;"></i>
+        Flux actif
+      </span>
+    </div>
+
+  </section>
+</div>
 {% endblock %}

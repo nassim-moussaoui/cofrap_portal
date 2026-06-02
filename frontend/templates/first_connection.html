@@ -1,135 +1,125 @@
 {% extends "base.html" %} {% block content %}
-<section class="setup-shell">
-  <div class="setup-card">
-    <div class="auth-kicker">Première connexion</div>
-    <h1>Initialisation du compte</h1>
-    <p class="auth-subtitle">
-      Saisis ton nom d'utilisateur, puis récupère ton mot de passe et configure
-      l'A2F avant de revenir au login.
-    </p>
+<div class="setup-wrap">
+  <div class="setup-card glass anim-1">
+
+    <!-- Brand -->
+    <div class="login-brand">
+      <span class="login-brand-name">COFRAP</span>
+    </div>
+
+    <!-- Step progress indicator -->
+    <div class="setup-progress anim-2">
+      <div class="setup-step-node {% if step == 'username' %}active{% else %}done{% endif %}">
+        {% if step != 'username' %}<i data-lucide="check" style="width:12px;height:12px;"></i>{% else %}1{% endif %}
+      </div>
+      <div class="setup-step-bar {% if step != 'username' %}done{% endif %}"></div>
+      <div class="setup-step-node {% if step == 'password' %}active{% elif step == 'mfa' %}done{% endif %}">
+        {% if step == 'mfa' %}<i data-lucide="check" style="width:12px;height:12px;"></i>{% else %}2{% endif %}
+      </div>
+      <div class="setup-step-bar {% if step == 'mfa' %}done{% endif %}"></div>
+      <div class="setup-step-node {% if step == 'mfa' %}active{% endif %}">3</div>
+    </div>
+
+    <!-- Header -->
+    <div class="anim-3">
+      <span class="cfp-tag">Première connexion</span>
+      <h1 class="setup-h1" style="margin-top:8px;">Initialisation du compte</h1>
+      <p class="setup-sub" style="margin-top:8px;">
+        Saisis ton nom d'utilisateur, puis récupère ton mot de passe et configure l'A2F avant de revenir au login.
+      </p>
+    </div>
 
     {% if error %}
-    <div class="login-error">{{ error }}</div>
-    {% endif %} {% if step == "username" %}
-    <form method="POST" class="login-form setup-form">
+    <div class="cfp-error anim-3">
+      <i data-lucide="alert-circle" style="width:15px;height:15px;flex-shrink:0;"></i>
+      {{ error }}
+    </div>
+    {% endif %}
+
+    <!-- ── Step 1: username ──────────────────────────────── -->
+    {% if step == "username" %}
+    <form method="POST" class="setup-form anim-4">
       <input type="hidden" name="action" value="start" />
-      <label for="username">Nom d'utilisateur</label>
-      <input
-        type="text"
-        id="username"
-        name="username"
-        value="{{ username|default('') }}"
-        placeholder="Nom d'utilisateur"
-        required
-      />
-      <button class="btn primary btn-wide btn-xl" type="submit">
+      <div class="cfp-field">
+        <label class="cfp-label" for="username">Nom d'utilisateur</label>
+        <input class="cfp-input" type="text" id="username" name="username"
+               value="{{ username|default('') }}" placeholder="Nom d'utilisateur" required />
+      </div>
+      <button class="cfp-btn cfp-btn-primary cfp-btn-wide" type="submit">
+        <i data-lucide="key-round" style="width:15px;height:15px;"></i>
         Générer le mot de passe
       </button>
-      <a class="btn secondary btn-wide btn-xl" href="{{ url_for('login') }}">
+      <a class="cfp-btn cfp-btn-secondary cfp-btn-wide" href="{{ url_for('login') }}">
+        <i data-lucide="arrow-left" style="width:15px;height:15px;"></i>
         Retour au login
       </a>
     </form>
+
+    <!-- ── Step 2: password ──────────────────────────────── -->
     {% elif step == "password" %}
-    <div class="setup-section">
-      <div class="setup-block">
-        <span class="setup-label">Mot de passe généré</span>
-        <div class="password-field">
-          <input
-            id="generated-password"
-            type="password"
-            value="{{ password }}"
-            readonly
-          />
-          <button class="btn secondary" type="button" id="toggle-password">
-            Afficher
-          </button>
-          <button class="btn secondary" type="button" id="copy-password">
-            Copier
-          </button>
+    <div x-data="{ shown: false, copied: false }" class="anim-4" style="display:flex;flex-direction:column;gap:18px;">
+      <div class="cfp-field">
+        <label class="cfp-label" for="generated-password">Mot de passe généré</label>
+        <div class="pw-row">
+          <input class="cfp-input" id="generated-password" :type="shown ? 'text' : 'password'" value="{{ password }}" readonly />
+          <button class="cfp-btn cfp-btn-secondary cfp-btn-sm" type="button" @click="shown = !shown"
+                  x-text="shown ? 'Masquer' : 'Afficher'">Afficher</button>
+          <button class="cfp-btn cfp-btn-secondary cfp-btn-sm" type="button"
+                  @click="navigator.clipboard.writeText('{{ password }}').then(() => { copied = true; setTimeout(() => copied = false, 1400) })"
+                  x-text="copied ? 'Copié ✓' : 'Copier'">Copier</button>
         </div>
-        <p class="setup-help">
-          Copie ce mot de passe et garde-le en lieu sûr. Il sera demandé à la
-          première connexion.
-        </p>
+        <p class="setup-help" style="margin-top:4px;">Copie ce mot de passe et garde-le en lieu sûr. Il sera demandé à la première connexion.</p>
       </div>
 
-      <div class="setup-block">
-        <span class="setup-label">Étape suivante</span>
-        <p class="setup-help">
-          Clique sur le bouton ci-dessous pour générer le QR code A2F à scanner
-          dans Authenticator.
+      <div class="cfp-divider"></div>
+
+      <div>
+        <p class="setup-help" style="margin-bottom:14px;">
+          Clique sur le bouton ci-dessous pour générer le QR code A2F à scanner dans Authenticator.
         </p>
         <form method="POST">
           <input type="hidden" name="action" value="configure_mfa" />
-          <button class="btn primary btn-wide btn-xl" type="submit">
+          <button class="cfp-btn cfp-btn-primary cfp-btn-wide" type="submit">
+            <i data-lucide="qr-code" style="width:15px;height:15px;"></i>
             Configurer l'A2F
           </button>
         </form>
       </div>
     </div>
+
+    <!-- ── Step 3: MFA QR ────────────────────────────────── -->
     {% elif step == "mfa" %}
-    <div class="setup-section setup-section-tight">
-      <div class="setup-block">
-        <span class="setup-label">QR code A2F</span>
-        <img
-          class="setup-qr"
-          src="{{ url_for('static', filename=mfa_qr) }}"
-          alt="QR code Authenticator"
-        />
+    <div class="anim-4" style="display:flex;flex-direction:column;gap:18px;">
+      <div style="text-align:center;">
+        <div class="cfp-label" style="margin-bottom:10px;">QR code A2F</div>
+        <img class="setup-qr" src="{{ url_for('static', filename=mfa_qr) }}" alt="QR code Authenticator" />
       </div>
 
-      <div class="setup-block">
-        <span class="setup-label">Instructions</span>
-        <p class="setup-help">
-          Scanne ce QR code avec Microsoft Authenticator ou Google
-          Authenticator, puis valide la configuration avant de continuer vers le
-          login.
+      <div class="cfp-divider"></div>
+
+      <div>
+        <div class="cfp-label" style="margin-bottom:12px;">Instructions</div>
+        <p class="setup-help" style="margin-bottom:12px;">
+          Scanne ce QR code avec Microsoft Authenticator ou Google Authenticator, puis valide avant de continuer.
         </p>
         <ul class="setup-list">
-          <li>Ouvre ton application d'authentification.</li>
-          <li>Ajoute un nouveau compte via QR code.</li>
-          <li>Scanne l'image affichée à l'écran.</li>
-          <li>Une fois terminé, reviens sur le portail de connexion.</li>
+          <li><span class="setup-list-dot"></span>Ouvre ton application d'authentification.</li>
+          <li><span class="setup-list-dot"></span>Ajoute un nouveau compte via QR code.</li>
+          <li><span class="setup-list-dot"></span>Scanne l'image affichée à l'écran.</li>
+          <li><span class="setup-list-dot"></span>Une fois terminé, reviens sur le portail de connexion.</li>
         </ul>
-        <form method="POST">
-          <input type="hidden" name="action" value="finish" />
-          <button class="btn primary btn-wide btn-xl" type="submit">
-            J'ai configuré l'A2F
-          </button>
-        </form>
       </div>
+
+      <form method="POST">
+        <input type="hidden" name="action" value="finish" />
+        <button class="cfp-btn cfp-btn-primary cfp-btn-wide" type="submit">
+          <i data-lucide="check-circle" style="width:15px;height:15px;"></i>
+          J'ai configuré l'A2F
+        </button>
+      </form>
     </div>
     {% endif %}
+
   </div>
-</section>
-
-<script>
-  (function () {
-    const passwordInput = document.getElementById("generated-password");
-    const toggleButton = document.getElementById("toggle-password");
-    const copyButton = document.getElementById("copy-password");
-
-    if (passwordInput && toggleButton) {
-      toggleButton.addEventListener("click", () => {
-        const isHidden = passwordInput.type === "password";
-        passwordInput.type = isHidden ? "text" : "password";
-        toggleButton.textContent = isHidden ? "Masquer" : "Afficher";
-      });
-    }
-
-    if (passwordInput && copyButton) {
-      copyButton.addEventListener("click", async () => {
-        try {
-          await navigator.clipboard.writeText(passwordInput.value);
-          copyButton.textContent = "Copié";
-          setTimeout(() => {
-            copyButton.textContent = "Copier";
-          }, 1400);
-        } catch (error) {
-          copyButton.textContent = "Erreur";
-        }
-      });
-    }
-  })();
-</script>
+</div>
 {% endblock %}

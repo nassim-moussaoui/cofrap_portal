@@ -1,18 +1,53 @@
 <!doctype html>
 <html lang="fr">
-  <head>
-    <meta charset="UTF-8" />
-    <title>COFRAP - Portail sécurisé</title>
-    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-    <link
-      rel="stylesheet"
-      href="{{ url_for('static', filename='css/style.css') }}"
-    />
-  </head>
-  <body class="page-shell">
-    <div class="ambient ambient-one"></div>
-    <div class="ambient ambient-two"></div>
-    <div class="ambient ambient-three"></div>
-    <main class="app-shell">{% block content %}{% endblock %}</main>
-  </body>
+
+<head>
+  <meta charset="UTF-8" />
+  <title>COFRAP — Portail sécurisé</title>
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+
+  <!-- Fonts: Syne (display) + DM Sans (body) + IBM Plex Mono (code) -->
+  <link rel="preconnect" href="https://fonts.googleapis.com" />
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+  <link href="https://fonts.googleapis.com/css2?family=Syne:wght@400;500;600;700;800&family=DM+Sans:opsz,wght@9..40,300;9..40,400;9..40,500;9..40,600&family=IBM+Plex+Mono:wght@400;500&display=swap" rel="stylesheet" />
+
+  <!-- Tailwind CSS (Play CDN) -->
+  <script src="https://cdn.tailwindcss.com"></script>
+  <script>
+    tailwind.config = {
+      theme: {
+        extend: {
+          fontFamily: {
+            sans:    ['DM Sans', 'sans-serif'],
+            display: ['Syne', 'sans-serif'],
+            mono:    ['IBM Plex Mono', 'monospace'],
+          }
+        }
+      }
+    }
+  </script>
+
+  <!-- Alpine.js -->
+  <script defer src="https://unpkg.com/alpinejs@3.x.x/dist/cdn.min.js"></script>
+
+  <!-- Lucide Icons -->
+  <script src="https://unpkg.com/lucide@latest/dist/umd/lucide.min.js"></script>
+
+  <link rel="stylesheet" href="{{ url_for('static', filename='css/style.css') }}" />
+</head>
+
+<body class="cfp-shell">
+  <!-- Ambient background layer -->
+  <div class="cfp-bg" aria-hidden="true">
+    <div class="cfp-grid"></div>
+    <div class="cfp-glow cfp-glow-1"></div>
+    <div class="cfp-glow cfp-glow-2"></div>
+    <div class="cfp-scan"></div>
+  </div>
+
+  <main class="cfp-main">{% block content %}{% endblock %}</main>
+
+  <script>lucide.createIcons();</script>
+</body>
+
 </html>
