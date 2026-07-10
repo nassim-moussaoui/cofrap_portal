@@ -6,6 +6,22 @@
   <title>COFRAP — Portail sécurisé</title>
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
 
+  <!-- Anti-FOUC : applique les modes d'accessibilité avant le premier rendu -->
+  <script>
+    (function () {
+      function g(k, d) { try { var v = localStorage.getItem('a11y_' + k); return v !== null ? JSON.parse(v) : d; } catch (e) { return d; } }
+      var h = document.documentElement;
+      if (g('dark', false))       h.classList.add('mode-dark');
+      if (g('contrast', false))   h.classList.add('mode-contrast');
+      if (g('colorblind', false)) h.classList.add('mode-colorblind');
+      var fs = g('fontsize', 'md');
+      if (fs === 'lg') h.classList.add('font-lg');
+      if (fs === 'xl') h.classList.add('font-xl');
+      if (g('dyslexia', false))   h.classList.add('font-dyslexia');
+      if (g('spacing', false))    h.classList.add('spacing-wide');
+    })();
+  </script>
+
   <!-- Fonts: Syne (display) + DM Sans (body) + IBM Plex Mono (code) -->
   <link rel="preconnect" href="https://fonts.googleapis.com" />
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
@@ -37,6 +53,10 @@
 </head>
 
 <body class="cfp-shell">
+
+  <!-- Lien d'évitement pour lecteurs d'écran et navigation clavier -->
+  <a href="#main-content" class="skip-link">Aller au contenu principal</a>
+
   <!-- Ambient background layer -->
   <div class="cfp-bg" aria-hidden="true">
     <div class="cfp-grid"></div>
@@ -45,9 +65,132 @@
     <div class="cfp-scan"></div>
   </div>
 
-  <main class="cfp-main">{% block content %}{% endblock %}</main>
+  <main id="main-content" class="cfp-main" tabindex="-1">{% block content %}{% endblock %}</main>
+
+  <!-- ── Bandeau d'accessibilité (fixe, toujours visible) ─────── -->
+  <nav class="a11y-topbar" x-data="a11y()" aria-label="Options d'accessibilité">
+    <div class="a11y-topbar-inner">
+
+      <!-- Label -->
+      <div class="a11y-topbar-brand">
+        <i data-lucide="accessibility" style="width:13px;height:13px;" aria-hidden="true"></i>
+        Accessibilité
+      </div>
+
+      <!-- Thème -->
+      <div class="a11y-topbar-group" role="group" aria-label="Thème">
+        <button class="a11y-tb-btn" :class="{active: !darkMode && !highContrast}"
+                @click="setTheme('normal')" :aria-pressed="(!darkMode && !highContrast).toString()">
+          Clair
+        </button>
+        <button class="a11y-tb-btn" :class="{active: darkMode}"
+                @click="setTheme('dark')" :aria-pressed="darkMode.toString()">
+          <i data-lucide="moon" style="width:11px;height:11px;" aria-hidden="true"></i>
+          Sombre
+        </button>
+        <button class="a11y-tb-btn" :class="{active: highContrast}"
+                @click="setTheme('contrast')" :aria-pressed="highContrast.toString()">
+          Contraste +
+        </button>
+      </div>
+
+      <!-- Daltonisme -->
+      <div class="a11y-topbar-group" role="group" aria-label="Vision des couleurs">
+        <button class="a11y-tb-btn" :class="{active: colorblind}"
+                @click="setColorblind(!colorblind)" :aria-pressed="colorblind.toString()">
+          <i data-lucide="eye" style="width:11px;height:11px;" aria-hidden="true"></i>
+          Daltonisme
+        </button>
+      </div>
+
+      <!-- Taille du texte -->
+      <div class="a11y-topbar-group" role="group" aria-label="Taille du texte">
+        <button class="a11y-tb-sz" style="font-size:0.72rem;"
+                :class="{active: fontSize==='md'}" @click="setFontSize('md')"
+                aria-label="Texte normal">A</button>
+        <button class="a11y-tb-sz" style="font-size:0.88rem;"
+                :class="{active: fontSize==='lg'}" @click="setFontSize('lg')"
+                aria-label="Texte grand">A</button>
+        <button class="a11y-tb-sz" style="font-size:1.05rem;"
+                :class="{active: fontSize==='xl'}" @click="setFontSize('xl')"
+                aria-label="Texte très grand">A</button>
+      </div>
+
+      <!-- Lecture -->
+      <div class="a11y-topbar-group" role="group" aria-label="Lecture">
+        <button class="a11y-tb-btn" :class="{active: dyslexia}"
+                @click="toggleDyslexia()" :aria-pressed="dyslexia.toString()">
+          Dyslexie
+        </button>
+        <button class="a11y-tb-btn" :class="{active: spacing}"
+                @click="toggleSpacing()" :aria-pressed="spacing.toString()">
+          Espacement
+        </button>
+      </div>
+
+      <!-- Reset -->
+      <button class="a11y-tb-reset" @click="resetAll()" aria-label="Réinitialiser les options d'accessibilité">
+        ↺ Reset
+      </button>
+
+    </div>
+  </nav>
 
   <script>lucide.createIcons();</script>
+
+  <script>
+    function _a11yGet(k, d) { try { var v = localStorage.getItem('a11y_' + k); return v !== null ? JSON.parse(v) : d; } catch (e) { return d; } }
+    function _a11ySave(k, v) { try { localStorage.setItem('a11y_' + k, JSON.stringify(v)); } catch (e) {} }
+
+    function a11y() {
+      return {
+        open: false,
+        darkMode:     _a11yGet('dark',       false),
+        highContrast: _a11yGet('contrast',    false),
+        colorblind:   _a11yGet('colorblind',  false),
+        fontSize:     _a11yGet('fontsize',    'md'),
+        dyslexia:     _a11yGet('dyslexia',    false),
+        spacing:      _a11yGet('spacing',     false),
+
+        init() { this._apply(); },
+
+        _apply() {
+          var h = document.documentElement;
+          h.classList.toggle('mode-dark',       this.darkMode);
+          h.classList.toggle('mode-contrast',   this.highContrast);
+          h.classList.toggle('mode-colorblind', this.colorblind);
+          h.classList.remove('font-lg', 'font-xl');
+          if (this.fontSize === 'lg') h.classList.add('font-lg');
+          if (this.fontSize === 'xl') h.classList.add('font-xl');
+          h.classList.toggle('font-dyslexia', this.dyslexia);
+          h.classList.toggle('spacing-wide',  this.spacing);
+          if (typeof lucide !== 'undefined') lucide.createIcons();
+        },
+
+        setTheme(mode) {
+          this.darkMode     = mode === 'dark';
+          this.highContrast = mode === 'contrast';
+          _a11ySave('dark',     this.darkMode);
+          _a11ySave('contrast', this.highContrast);
+          this._apply();
+        },
+
+        setColorblind(v) { this.colorblind = v; _a11ySave('colorblind', v); this._apply(); },
+        setFontSize(s)   { this.fontSize = s;   _a11ySave('fontsize', s);   this._apply(); },
+        toggleDyslexia() { this.dyslexia = !this.dyslexia; _a11ySave('dyslexia', this.dyslexia); this._apply(); },
+        toggleSpacing()  { this.spacing  = !this.spacing;  _a11ySave('spacing',  this.spacing);  this._apply(); },
+
+        resetAll() {
+          this.darkMode = false; this.highContrast = false; this.colorblind = false;
+          this.fontSize = 'md'; this.dyslexia = false; this.spacing = false;
+          ['dark','contrast','colorblind','fontsize','dyslexia','spacing'].forEach(function(k) {
+            localStorage.removeItem('a11y_' + k);
+          });
+          this._apply();
+        }
+      };
+    }
+  </script>
 </body>
 
 </html>

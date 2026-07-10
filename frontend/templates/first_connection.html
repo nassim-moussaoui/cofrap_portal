@@ -8,17 +8,23 @@
     </div>
 
     <!-- Step progress indicator -->
-    <div class="setup-progress anim-2">
-      <div class="setup-step-node {% if step == 'username' %}active{% else %}done{% endif %}">
-        {% if step != 'username' %}<i data-lucide="check" style="width:12px;height:12px;"></i>{% else %}1{% endif %}
+    <nav class="setup-progress anim-2" aria-label="Étapes de la première connexion">
+      <div class="setup-step-node {% if step == 'username' %}active{% else %}done{% endif %}"
+           aria-current="{% if step == 'username' %}step{% else %}false{% endif %}"
+           aria-label="Étape 1 : Identifiant {% if step != 'username' %}(terminée){% elif step == 'username' %}(en cours){% endif %}">
+        {% if step != 'username' %}<i data-lucide="check" style="width:12px;height:12px;" aria-hidden="true"></i>{% else %}1{% endif %}
       </div>
-      <div class="setup-step-bar {% if step != 'username' %}done{% endif %}"></div>
-      <div class="setup-step-node {% if step == 'password' %}active{% elif step == 'mfa' %}done{% endif %}">
-        {% if step == 'mfa' %}<i data-lucide="check" style="width:12px;height:12px;"></i>{% else %}2{% endif %}
+      <div class="setup-step-bar {% if step != 'username' %}done{% endif %}" aria-hidden="true"></div>
+      <div class="setup-step-node {% if step == 'password' %}active{% elif step == 'mfa' %}done{% endif %}"
+           aria-current="{% if step == 'password' %}step{% else %}false{% endif %}"
+           aria-label="Étape 2 : Mot de passe {% if step == 'mfa' %}(terminée){% elif step == 'password' %}(en cours){% else %}(à venir){% endif %}">
+        {% if step == 'mfa' %}<i data-lucide="check" style="width:12px;height:12px;" aria-hidden="true"></i>{% else %}2{% endif %}
       </div>
-      <div class="setup-step-bar {% if step == 'mfa' %}done{% endif %}"></div>
-      <div class="setup-step-node {% if step == 'mfa' %}active{% endif %}">3</div>
-    </div>
+      <div class="setup-step-bar {% if step == 'mfa' %}done{% endif %}" aria-hidden="true"></div>
+      <div class="setup-step-node {% if step == 'mfa' %}active{% endif %}"
+           aria-current="{% if step == 'mfa' %}step{% else %}false{% endif %}"
+           aria-label="Étape 3 : Authentification à deux facteurs {% if step == 'mfa' %}(en cours){% else %}(à venir){% endif %}">3</div>
+    </nav>
 
     <!-- Header -->
     <div class="anim-3">
@@ -30,20 +36,21 @@
     </div>
 
     {% if error %}
-    <div class="cfp-error anim-3">
-      <i data-lucide="alert-circle" style="width:15px;height:15px;flex-shrink:0;"></i>
+    <div class="cfp-error anim-3" role="alert" aria-live="assertive">
+      <i data-lucide="alert-circle" style="width:15px;height:15px;flex-shrink:0;" aria-hidden="true"></i>
       {{ error }}
     </div>
     {% endif %}
 
     <!-- ── Step 1: username ──────────────────────────────── -->
     {% if step == "username" %}
-    <form method="POST" class="setup-form anim-4">
+    <form method="POST" class="setup-form anim-4" aria-label="Étape 1 : saisie du nom d'utilisateur">
       <input type="hidden" name="action" value="start" />
       <div class="cfp-field">
         <label class="cfp-label" for="username">Nom d'utilisateur</label>
         <input class="cfp-input" type="text" id="username" name="username"
-               value="{{ username|default('') }}" placeholder="Nom d'utilisateur" required />
+               value="{{ username|default('') }}" placeholder="Nom d'utilisateur"
+               required aria-required="true" autocomplete="username" />
       </div>
       <button class="cfp-btn cfp-btn-primary cfp-btn-wide" type="submit">
         <i data-lucide="key-round" style="width:15px;height:15px;"></i>

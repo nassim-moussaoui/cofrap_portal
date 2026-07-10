@@ -29,17 +29,19 @@
       </p>
 
       {% if error %}
-      <div class="cfp-error">
-        <i data-lucide="alert-circle" style="width:15px;height:15px;flex-shrink:0;"></i>
+      <div class="cfp-error" role="alert" aria-live="assertive" id="create-error">
+        <i data-lucide="alert-circle" style="width:15px;height:15px;flex-shrink:0;" aria-hidden="true"></i>
         {{ error }}
       </div>
       {% endif %}
 
-      <form method="POST" class="split-form">
+      <form method="POST" class="split-form" aria-label="Formulaire de création d'utilisateur">
         <div class="cfp-field">
           <label class="cfp-label" for="username">Nom d'utilisateur</label>
           <input class="cfp-input" type="text" id="username" name="username"
-                 value="{{ username|default('') }}" placeholder="ex : cduval" required />
+                 value="{{ username|default('') }}" placeholder="ex : cduval"
+                 required aria-required="true" autocomplete="off"
+                 {% if error %}aria-invalid="true" aria-describedby="create-error"{% endif %} />
         </div>
         <div class="cfp-field">
           <label class="cfp-label" for="full_name">

@@ -13,10 +13,10 @@
         <small>Connecté en tant que</small>
         <strong>{% if username %}{{ username }}{% else %}P. Durand{% endif %}</strong>
       </div>
-      <button class="cfp-btn cfp-btn-ghost cfp-btn-sm" style="display:flex;align-items:center;gap:6px;">
+      <a href="{{ url_for('logout') }}" class="cfp-btn cfp-btn-ghost cfp-btn-sm" style="display:flex;align-items:center;gap:6px;">
         <i data-lucide="log-out" style="width:14px;height:14px;"></i>
         Déconnexion
-      </button>
+      </a>
     </div>
   </header>
 

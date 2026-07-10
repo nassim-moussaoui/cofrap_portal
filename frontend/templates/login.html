@@ -16,8 +16,8 @@
     </div>
 
     {% if error %}
-    <div class="cfp-error anim-2">
-      <i data-lucide="alert-circle" style="width:15px;height:15px;flex-shrink:0;"></i>
+    <div class="cfp-error anim-2" role="alert" aria-live="assertive" id="otp-error">
+      <i data-lucide="alert-circle" style="width:15px;height:15px;flex-shrink:0;" aria-hidden="true"></i>
       {{ error }}
     </div>
     {% endif %}
@@ -25,14 +25,14 @@
     <form method="POST" class="login-form anim-3" id="otp-form">
       <input type="hidden" name="stage" value="otp" />
       <div class="otp-wrap">
-        <span class="otp-label">Code à 6 chiffres</span>
-        <div class="otp-row" id="otp-inputs">
-          <input class="otp-digit" type="text" maxlength="1" inputmode="numeric" autocomplete="one-time-code" />
-          <input class="otp-digit" type="text" maxlength="1" inputmode="numeric" />
-          <input class="otp-digit" type="text" maxlength="1" inputmode="numeric" />
-          <input class="otp-digit" type="text" maxlength="1" inputmode="numeric" />
-          <input class="otp-digit" type="text" maxlength="1" inputmode="numeric" />
-          <input class="otp-digit" type="text" maxlength="1" inputmode="numeric" />
+        <span class="otp-label" id="otp-label">Code à 6 chiffres</span>
+        <div class="otp-row" id="otp-inputs" aria-labelledby="otp-label" aria-describedby="{% if error %}otp-error{% endif %}">
+          <input class="otp-digit" type="text" maxlength="1" inputmode="numeric" autocomplete="one-time-code" aria-label="Chiffre 1" {% if error %}aria-invalid="true"{% endif %} />
+          <input class="otp-digit" type="text" maxlength="1" inputmode="numeric" aria-label="Chiffre 2" />
+          <input class="otp-digit" type="text" maxlength="1" inputmode="numeric" aria-label="Chiffre 3" />
+          <input class="otp-digit" type="text" maxlength="1" inputmode="numeric" aria-label="Chiffre 4" />
+          <input class="otp-digit" type="text" maxlength="1" inputmode="numeric" aria-label="Chiffre 5" />
+          <input class="otp-digit" type="text" maxlength="1" inputmode="numeric" aria-label="Chiffre 6" />
         </div>
         <input type="hidden" id="otp_code" name="otp_code" value="" />
       </div>
@@ -51,23 +51,26 @@
     </div>
 
     {% if error %}
-    <div class="cfp-error anim-2">
-      <i data-lucide="alert-circle" style="width:15px;height:15px;flex-shrink:0;"></i>
+    <div class="cfp-error anim-2" role="alert" aria-live="assertive" id="creds-error">
+      <i data-lucide="alert-circle" style="width:15px;height:15px;flex-shrink:0;" aria-hidden="true"></i>
       {{ error }}
     </div>
     {% endif %}
 
-    <form method="POST" class="login-form anim-3">
+    <form method="POST" class="login-form anim-3" aria-label="Formulaire de connexion">
       <input type="hidden" name="stage" value="credentials" />
       <div class="cfp-field">
         <label class="cfp-label" for="username">Nom d'utilisateur</label>
         <input class="cfp-input" type="text" id="username" name="username"
-               value="{{ username|default('') }}" placeholder="Nom d'utilisateur" required />
+               value="{{ username|default('') }}" placeholder="Nom d'utilisateur"
+               required aria-required="true" autocomplete="username"
+               {% if error %}aria-invalid="true" aria-describedby="creds-error"{% endif %} />
       </div>
       <div class="cfp-field">
         <label class="cfp-label" for="password">Mot de passe</label>
         <input class="cfp-input" type="password" id="password" name="password"
-               placeholder="••••••••" required />
+               placeholder="••••••••" required aria-required="true" autocomplete="current-password"
+               {% if error %}aria-invalid="true" aria-describedby="creds-error"{% endif %} />
       </div>
       <button class="cfp-btn cfp-btn-primary cfp-btn-wide" type="submit">
         <i data-lucide="arrow-right" style="width:15px;height:15px;"></i>

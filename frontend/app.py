@@ -370,6 +370,12 @@ def login():
     )
 
 
+@app.route("/logout")
+def logout():
+    session.clear()
+    return redirect(url_for("login"))
+
+
 @app.route("/dashboard")
 def dashboard():
     username = request.args.get("username", "").strip()
